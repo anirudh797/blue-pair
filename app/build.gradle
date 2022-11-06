@@ -13,31 +13,31 @@ android {
     }
 
     def buildSecretPropertiesFile = rootProject.file('blue-pair-secret.properties')
-    def buildSecretProperties = new Properties()
-    buildSecretProperties.load(new FileInputStream(buildSecretPropertiesFile))
+//    def buildSecretProperties = new Properties()/
+//    buildSecretProperties.load(new FileInputStream(buildSecretPropertiesFile))
 
     signingConfigs {
-        release {
-            storeFile file(buildSecretProperties["release.store.file"])
-            storePassword buildSecretProperties["release.store.password"]
-            keyAlias buildSecretProperties["release.key.alias"]
-            keyPassword buildSecretProperties["release.key.password"]
-
-            // Optional, specify signing versions used
-            v1SigningEnabled true
-            v2SigningEnabled true
-        }
+//        release {
+//            storeFile file(buildSecretProperties["release.store.file"])
+//            storePassword buildSecretProperties["release.store.password"]
+//            keyAlias buildSecretProperties["release.key.alias"]
+//            keyPassword buildSecretProperties["release.key.password"]
+//
+//            // Optional, specify signing versions used
+//            v1SigningEnabled true
+//            v2SigningEnabled true
+//        }
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
-            resValue("string", "AD_APP_ID", buildSecretProperties["ad.app.id"])
-            buildConfigField("String", "AD_UNIT_ID", buildSecretProperties["ad.unit.id"])
-            signingConfig signingConfigs.release
-        }
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//
+//            resValue("string", "AD_APP_ID", buildSecretProperties["ad.app.id"])
+//            buildConfigField("String", "AD_UNIT_ID", buildSecretProperties["ad.unit.id"])
+//            signingConfig signingConfigs.release
+//        }
         debug {
             debuggable true
             resValue("string", "AD_APP_ID", "\"ca-app-pub-3940256099942544~3347511713\"")

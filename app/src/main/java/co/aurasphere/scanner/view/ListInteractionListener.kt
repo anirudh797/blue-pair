@@ -1,4 +1,4 @@
-/**
+/*
  * MIT License
  * <p>
  * Copyright (c) 2017 Donato Rimenti
@@ -21,54 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.aurasphere.bluepair.bluetooth;
-
-import android.bluetooth.BluetoothDevice;
+package co.aurasphere.scanner.view
 
 /**
- * Callback for handling Bluetooth events.
+ * Interface that defines how to handle interaction with a RecyclerView list or one of its elements.
+ * This class has a generic argument which should evaluate to the list's elements class.
  *
- * @author Donato Rimenti
  */
-public interface BluetoothDiscoveryDeviceListener {
-
+interface ListInteractionListener<T> {
     /**
-     * Called when a new device has been found.
+     * Called when a list element is clicked.
      *
-     * @param device the device found.
+     * @param item the clicked item.
      */
-    void onDeviceDiscovered(BluetoothDevice device);
+    fun onItemClick(item: T)
 
     /**
-     * Called when device discovery starts.
+     * Called when the list elements are being fetched.
      */
-    void onDeviceDiscoveryStarted();
+    fun startLoading()
 
     /**
-     * Called on creation to inject a {@link BluetoothController} component to handle Bluetooth.
+     * Called when one or all the list elements have been fetched.
      *
-     * @param bluetooth the controller for the Bluetooth.
+     * @param partialResults true if the results are partial and
+     * the fetching is still going, false otherwise.
      */
-    void setBluetoothController(BluetoothController bluetooth);
+    fun endLoading(partialResults: Boolean)
 
     /**
-     * Called when discovery ends.
+     * Called to dismiss a loading dialog.
+     *
+     * @param error   true if an error has occurred, false otherwise.
+     * @param element the list element processed.
      */
-    void onDeviceDiscoveryEnd();
-
-    /**
-     * Called when the Bluetooth status changes.
-     */
-    void onBluetoothStatusChanged();
-
-    /**
-     * Called when the Bluetooth has been enabled.
-     */
-    void onBluetoothTurningOn();
-
-    /**
-     * Called when a device pairing ends.
-     */
-    void onDevicePairingEnded();
-
+    fun endLoadingWithDialog(error: Boolean, element: T)
 }

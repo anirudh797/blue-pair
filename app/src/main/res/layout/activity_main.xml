@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-MIT License
 
-Copyright (c) 2017 Donato Rimenti
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--->
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,7 +9,7 @@ SOFTWARE.
     android:fitsSystemWindows="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:layout_scrollFlags="exitUntilCollapsed"
-    tools:context="co.aurasphere.bluepair.MainActivity">
+    tools:context="co.aurasphere.scanner.MainActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -66,14 +44,6 @@ SOFTWARE.
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <LinearLayout
-            android:id="@+id/ad_container"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/adFilling"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:gravity="center"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -85,8 +55,9 @@ SOFTWARE.
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_bluetooth_white_24dp" />
 
-    <co.aurasphere.bluepair.view.RecyclerViewProgressEmptySupport
+    <co.aurasphere.scanner.view.RecyclerViewProgressEmptySupport
         android:id="@+id/list"
+        tools:visibility="gone"
         android:name="co.aurasphere.bluepair.DeviceFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -94,7 +65,62 @@ SOFTWARE.
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="co.aurasphere.bluepair.DeviceFragment"
+        tools:context="co.aurasphere.scanner.DeviceFragment"
         tools:listitem="@layout/list_device_item" />
+
+    <RelativeLayout
+        android:id="@+id/layout_connected"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:visibility="visible"
+        android:layout_gravity="center">
+
+    <Button
+        android:id="@+id/btn_send"
+        android:text="@string/send"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_height="wrap_content"/>
+
+       <EditText
+           android:id="@+id/et_send"
+           android:layout_marginTop="20dp"
+           android:layout_width="wrap_content"
+           android:minWidth="30dp"
+           android:layout_alignStart="@id/btn_send"
+           android:layout_height="wrap_content"
+           android:layout_below="@id/btn_send"
+           />
+
+        <Button
+            android:id="@+id/btn_receive"
+            android:text="@string/receive"
+            android:layout_marginRight="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/et_receive"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:minWidth="30dp"
+            android:layout_alignStart="@id/btn_receive"
+            android:layout_alignEnd="@id/btn_receive"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_receive"
+            />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_centerHorizontal="true"
+            android:text="Cancel Connection"
+            android:layout_marginTop="100dp"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

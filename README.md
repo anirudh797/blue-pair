@@ -25,7 +25,7 @@ Simple Bluetooth Android app for handling device discovery and pairing.
 
 ### Get it on Google Play
 You can download this app from Google Play Store following this link:
-<a href='https://play.google.com/store/apps/details?id=co.aurasphere.bluepair&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=co.anirudh.scanner&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 ### Contributions
 If you want to contribute on this project, just fork this repo and submit a pull request with your changes. Improvements are always appreciated!

@@ -1,22 +1,18 @@
-/**
+/*
  * MIT License
- *
- *
+ * <p>
  * Copyright (c) 2017 Donato Rimenti
- *
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,53 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.aurasphere.scanner.bluetooth
-
-import android.bluetooth.BluetoothDevice
-import co.aurasphere.scanner.bluetooth.BluetoothController
+package co.aurasphere.bluetooth.view
 
 /**
- * Callback for handling Bluetooth events.
+ * Interface that defines how to handle interaction with a RecyclerView list or one of its elements.
+ * This class has a generic argument which should evaluate to the list's elements class.
  *
- * @author Donato Rimenti
  */
-interface BluetoothDiscoveryDeviceListener {
+interface ListInteractionListener<T> {
     /**
-     * Called when a new device has been found.
+     * Called when a list element is clicked.
      *
-     * @param device the device found.
+     * @param item the clicked item.
      */
-    fun onDeviceDiscovered(device: BluetoothDevice?)
+    fun onItemClick(item: T)
 
     /**
-     * Called when device discovery starts.
+     * Called when the list elements are being fetched.
      */
-    fun onDeviceDiscoveryStarted()
+    fun startLoading()
 
     /**
-     * Called on creation to inject a [BluetoothController] component to handle Bluetooth.
+     * Called when one or all the list elements have been fetched.
      *
-     * @param bluetooth the controller for the Bluetooth.
+     * @param partialResults true if the results are partial and
+     * the fetching is still going, false otherwise.
      */
-    fun setBluetoothController(bluetooth: BluetoothController?)
+    fun endLoading(partialResults: Boolean)
 
     /**
-     * Called when discovery ends.
+     * Called to dismiss a loading dialog.
+     *
+     * @param error   true if an error has occurred, false otherwise.
+     * @param element the list element processed.
      */
-    fun onDeviceDiscoveryEnd()
-
-    /**
-     * Called when the Bluetooth status changes.
-     */
-    fun onBluetoothStatusChanged()
-
-    /**
-     * Called when the Bluetooth has been enabled.
-     */
-    fun onBluetoothTurningOn()
-
-    /**
-     * Called when a device pairing ends.
-     */
-    fun onDevicePairingEnded()
+    fun endLoadingWithDialog(error: Boolean, element: T)
 }

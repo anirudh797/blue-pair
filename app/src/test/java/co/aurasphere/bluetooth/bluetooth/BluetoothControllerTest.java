@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.aurasphere.scanner.bluetooth;
+package co.aurasphere.bluetooth.bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

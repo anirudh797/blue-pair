@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.aurasphere.scanner">
+    package="co.aurasphere.bluetooth">
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+
 
     <application
         android:allowBackup="true"
@@ -12,9 +19,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".bluetooth.MyService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity
+            android:name="co.aurasphere.bluetooth.ControllerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_controller"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
@@ -23,14 +41,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+<!--        <service-->
+<!--            android:name=".bluetooth.BluetoothHidService"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="false" />-->
+<!--        <service-->
+<!--            android:name=".bluetooth.BluetoothTileService"-->
+<!--            android:exported="true"-->
+<!--            android:label="Bluetooth Remote"-->
+<!--            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.service.quicksettings.action.QS_TILE" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
+
+<!--        <receiver android:name=".bluetooth.NotificationBroadcastReceiver" />-->
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.gms.version" -->
+        <!-- android:value="@integer/google_play_services_version" /> -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/AD_APP_ID"/>

@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.aurasphere.scanner.view
+package co.aurasphere.bluetooth.view
 
-import co.aurasphere.scanner.bluetooth.BluetoothController.Companion.deviceToString
+import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 import android.bluetooth.BluetoothDevice
 import android.support.v7.widget.RecyclerView
-import co.aurasphere.scanner.bluetooth.BluetoothDiscoveryDeviceListener
-import co.aurasphere.scanner.bluetooth.BluetoothController
+import co.aurasphere.bluetooth.bluetooth.BluetoothDiscoveryDeviceListener
+import co.aurasphere.bluetooth.bluetooth.BluetoothController
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import co.aurasphere.scanner.R
+import co.aurasphere.bluetooth.R
 import android.widget.TextView
 import java.util.ArrayList
 

@@ -16,4 +16,34 @@
     <string name="empty_list_message">No nearby devices found. Tap on the bottom-right button to start a new device discovery.</string>
     <string name="bluetooth_not_available_message">It seems that this device doesn\'t have a Bluetooth controller available. \nBlue Pair works only with Bluetooth, so please try again on a different device. \nThe app will be now terminated.</string>
     <string name="bluetooth_not_available_title">Bluetooth not available</string>
+    <string name="title_activity_controller">ControllerActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="btn_left">◀️</string>
+    <string name="btn_right">▶️</string>
+    <string name="btn_up">🔼</string>
+    <string name="btn_down">🔽</string>
+    <string name="btn_middle">⏺️</string>
+
+    <string name="btn_back">🔙</string>
+    <string name="btn_home">🏠</string>
+    <string name="btn_power">⛔</string>
+    <string name="btn_mute">🔇</string>
+    <string name="btn_menu">☰</string>
+    <string name="btn_gear">⚙️</string>
+    <string name="btn_vol_up">🔊</string>
+    <string name="btn_vol_down">🔉</string>
+    <string name="btn_play_pause">⏯️</string>
+    <string name="btn_rewind">⏪</string>
+    <string name="btn_forward">⏩</string>
+
+    <string name="play_pause">Play/Pause</string>
+    <string name="vol_inc">Vol+</string>
+    <string name="vol_dec">Vol-</string>
 </resources>

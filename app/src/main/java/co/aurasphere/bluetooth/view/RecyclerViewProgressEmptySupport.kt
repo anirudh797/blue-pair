@@ -21,11 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package co.aurasphere.scanner.view
+package co.aurasphere.bluetooth.view
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.AdapterDataObserver
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ProgressBar

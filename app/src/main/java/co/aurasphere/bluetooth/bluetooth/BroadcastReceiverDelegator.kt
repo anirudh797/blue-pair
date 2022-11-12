@@ -1,7 +1,7 @@
 
-package co.aurasphere.scanner.bluetooth
+package co.aurasphere.bluetooth.bluetooth
 
-import co.aurasphere.scanner.bluetooth.BluetoothController.Companion.deviceToString
+import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 
 import android.content.BroadcastReceiver
 import android.content.Intent
@@ -43,7 +43,7 @@ class BroadcastReceiverDelegator(
                 // object and its info from the Intent.
                 val device =
                     intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                Log.d(TAG, "Device discovered! " + deviceToString(device))
+                Log.d(TAG, "Device discovered! " + device?.let { deviceToString(it) })
                 listener.onDeviceDiscovered(device)
             }
             BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
@@ -51,11 +51,11 @@ class BroadcastReceiverDelegator(
                 Log.d(TAG, "Discovery ended.")
                 listener.onDeviceDiscoveryEnd()
             }
-            BluetoothAdapter.ACTION_STATE_CHANGED -> {
-                // Discovery state changed.
-                Log.d(TAG, "Bluetooth state changed.")
-                listener.onBluetoothStatusChanged()
-            }
+//            BluetoothAdapter.ACTION_STATE_CHANGED -> {
+//                // Discovery state changed.
+//                Log.d(TAG, "Bluetooth state changed.")
+//                listener.onBluetoothStatusChanged()
+//            }
             BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
                 // Pairing state has changed.
                 Log.d(TAG, "Bluetooth bonding state changed.")

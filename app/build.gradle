@@ -13,6 +13,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+
     def buildSecretPropertiesFile = rootProject.file('blue-pair-secret.properties')
 //    def buildSecretProperties = new Properties()/
 //    buildSecretProperties.load(new FileInputStream(buildSecretPropertiesFile))
@@ -49,16 +50,30 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    buildFeatures {
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
+    //noinspection GradleCompatible
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     testImplementation 'junit:junit:4.12'

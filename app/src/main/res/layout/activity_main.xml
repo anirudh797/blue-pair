@@ -9,7 +9,182 @@
     android:fitsSystemWindows="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:layout_scrollFlags="exitUntilCollapsed"
-    tools:context="co.aurasphere.scanner.MainActivity">
+    tools:context="co.aurasphere.bluetooth.MainActivity">
+
+    <TableLayout
+        android:id="@+id/controller_view"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical"
+        tools:visibility="visible"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp">
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/cmbBondedDevices"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_span="2"
+                android:layout_weight="1" />
+
+<!--            <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                android:id="@+id/swtConnect"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:layout_span="2"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="Connect" />-->
+
+        </TableRow>
+
+        <TableRow>
+
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnPower"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_power" />
+
+                <Button
+                    android:id="@+id/btnPair"
+                    style="@style/half_button_style"
+                    android:text="📶"
+                    android:visibility="invisible" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnUp"
+                style="@style/full_button_style"
+                android:text="@string/btn_up" />
+
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnMenu"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_gear" />
+
+                <Button
+                    android:id="@+id/btnMute"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_mute" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnLeft"
+                style="@style/full_button_style"
+                android:text="@string/btn_left" />
+
+            <Button
+                android:id="@+id/btnMiddle"
+                style="@style/full_button_style"
+                android:text="@string/btn_middle" />
+
+            <Button
+                android:id="@+id/btnRight"
+                style="@style/full_button_style"
+                android:text="@string/btn_right" />
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnHome"
+                style="@style/full_button_style"
+                android:text="@string/btn_home" />
+
+            <Button
+                android:id="@+id/btnDown"
+                style="@style/full_button_style"
+                android:text="@string/btn_down" />
+
+            <Button
+                android:id="@+id/btnBack"
+                style="@style/full_button_style"
+                android:text="@string/btn_back" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/btnRewind"
+                style="@style/full_button_style"
+                android:text="@string/btn_rewind" />
+
+            <Button
+                android:id="@+id/btnForward"
+                style="@style/full_button_style"
+                android:text="@string/btn_forward" />
+
+            <Button
+                android:id="@+id/btnPlayPause"
+                style="@style/full_button_style"
+                android:text="@string/btn_play_pause" />
+
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnVolInc"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_vol_up" />
+
+                <Button
+                    android:id="@+id/btnVolDec"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_vol_down" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtInput"
+                android:layout_span="2"
+                android:layout_weight="1"
+                android:hint="Type text here to send."
+                android:inputType="text" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txtOut"
+                android:layout_width="match_parent"
+                android:layout_margin="2dp"
+                android:layout_span="4"
+                android:layout_weight="1" />
+        </TableRow>
+
+
+        <Button android:id="@+id/btn_cancel_controller"
+            style="@style/half_button_style"
+            android:text="Cancel"
+            />
+
+    </TableLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -55,7 +230,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_bluetooth_white_24dp" />
 
-    <co.aurasphere.scanner.view.RecyclerViewProgressEmptySupport
+    <co.aurasphere.bluetooth.view.RecyclerViewProgressEmptySupport
         android:id="@+id/list"
         tools:visibility="gone"
         android:name="co.aurasphere.bluepair.DeviceFragment"
@@ -65,8 +240,17 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context="co.aurasphere.scanner.DeviceFragment"
+        tools:context="co.aurasphere.bluetooth.DeviceFragment"
         tools:listitem="@layout/list_device_item" />
+
+    <Button
+        android:id="@+id/btn_listen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Listen"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="100dp"
+        />
 
     <RelativeLayout
         android:id="@+id/layout_connected"
@@ -74,48 +258,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:visibility="visible"
+        android:background="@color/white"
         android:layout_gravity="center">
 
-    <Button
+        <EditText
+            android:id="@+id/et_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/btn_send"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:minWidth="30dp"
+            android:textColor="@color/colorPrimary"
+            tools:text="Anirudh" />
+
+         <Button
         android:id="@+id/btn_send"
         android:text="@string/send"
+        android:layout_below="@id/et_send"
         android:layout_width="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_height="wrap_content"/>
 
-       <EditText
-           android:id="@+id/et_send"
-           android:layout_marginTop="20dp"
-           android:layout_width="wrap_content"
-           android:minWidth="30dp"
-           android:layout_alignStart="@id/btn_send"
-           android:layout_height="wrap_content"
-           android:layout_below="@id/btn_send"
-           />
+
 
         <Button
             android:id="@+id/btn_receive"
             android:text="@string/receive"
             android:layout_marginRight="30dp"
+            android:layout_below="@id/et_receive"
             android:layout_alignParentEnd="true"
+            android:layout_alignBaseline="@id/btn_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <EditText
+        <TextView
             android:id="@+id/et_receive"
-            android:layout_marginTop="20dp"
+            android:layout_alignBaseline="@id/et_send"
             android:layout_width="wrap_content"
             android:minWidth="30dp"
+            android:textSize="20sp"
+            tools:text="Anirudh"
+            android:textColor="@color/colorPrimary"
             android:layout_alignStart="@id/btn_receive"
-            android:layout_alignEnd="@id/btn_receive"
             android:layout_height="wrap_content"
-            android:layout_below="@id/btn_receive"
+            android:maxLines="2"
             />
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_centerHorizontal="true"
             android:text="Cancel Connection"
+            android:layout_below="@id/btn_send"
             android:layout_marginTop="100dp"
             android:layout_width="wrap_content"
             android:layout_marginBottom="50dp"

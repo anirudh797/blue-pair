@@ -36,7 +36,6 @@ SOFTWARE.
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -44,4 +43,32 @@ SOFTWARE.
         <item name="android:windowBackground">@drawable/splashscreen</item>
     </style>
 
+
+    <style name="full_button_style" >
+        <item name="android:layout_marginBottom">-6dp</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">60sp</item>
+        <item name="android:layout_height">120dp</item>
+    </style>
+
+    <style name="half_button_style" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">-6dp</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="notification_button_style" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textSize">50sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">2dp</item>
+    </style>
 </resources>

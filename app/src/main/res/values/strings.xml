@@ -42,8 +42,14 @@
     <string name="btn_play_pause">⏯️</string>
     <string name="btn_rewind">⏪</string>
     <string name="btn_forward">⏩</string>
-
+    <string name="btn_1">1</string>
+    <string name="btn_info">Info</string>
+    <string name="btn_2">2</string>
     <string name="play_pause">Play/Pause</string>
     <string name="vol_inc">Vol+</string>
     <string name="vol_dec">Vol-</string>
+    <string name="ch_up">ch +</string>
+    <string name="ch_down">ch -</string>
+    <string name="magenta">Magenta</string>
+    <string name="EPG">EPG</string>
 </resources>

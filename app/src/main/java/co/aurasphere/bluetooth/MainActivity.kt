@@ -27,7 +27,6 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -35,16 +34,12 @@ import android.os.*
 import android.support.annotation.RequiresApi
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.widget.*
 import co.aurasphere.bluetooth.bluetooth.*
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
@@ -53,6 +48,7 @@ import co.aurasphere.bluetooth.view.DeviceRecyclerViewAdapter
 import co.aurasphere.bluetooth.view.ListInteractionListener
 import co.aurasphere.bluetooth.view.RecyclerViewProgressEmptySupport
 import org.json.JSONObject
+import java.util.function.IntConsumer
 
 
 /**
@@ -295,6 +291,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
 //                v
 //            )
 //        }
+        val txtInput : EditText = findViewById(R.id.txtInput)
         val btnLeft: Button = findViewById(R.id.btnLeft)
         val btnRight: Button = findViewById(R.id.btnRight)
         val btnUp: Button = findViewById(R.id.btnUp)
@@ -309,6 +306,13 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         val btnRewind: Button = findViewById(R.id.btnRewind)
         val btnForward: Button = findViewById(R.id.btnForward)
         val cancelController : Button = findViewById(R.id.btn_cancel_controller)
+        val btnChUp : Button = findViewById(R.id.btnChannelUp)
+        val btnChDown : Button = findViewById(R.id.btnChannelDown)
+        val btn1 : Button = findViewById(R.id.btn1)
+        val btn2 : Button = findViewById(R.id.btn2)
+        val epg : Button = findViewById(R.id.btnEpg)
+        val btnInfo : Button = findViewById(R.id.info)
+        val btnMagenta : Button = findViewById(R.id.btnMagenta)
 
 
         cancelController.setOnClickListener {
@@ -332,54 +336,18 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         buttons.add(btnMute)
         buttons.add(btnRewind)
         buttons.add(btnForward)
+        buttons.add(btnChUp)
+        buttons.add(btnChDown)
+        buttons.apply {
+            add(btn1)
+            add(btn2)
+            add(btnInfo)
+            add(epg)
+            add(btnMagenta)
+        }
         //        buttons.add(btnSource);
         setButtonsEnabled(true)
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
-//
-//        btnUp.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.MENU_UP.get(0).toInt(),
-//                RemoteControlHelper.Key.MENU_UP.get(1).toInt())
-//        }
-//
-//        btnLeft.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.MENU_LEFT.get(0).toInt(),
-//                RemoteControlHelper.Key.MENU_LEFT.get(1).toInt())
-//        }
-//        btnRight.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.MENU_RIGHT.get(0).toInt(),
-//                RemoteControlHelper.Key.MENU_RIGHT.get(1).toInt())
-//        }
-//
-//        btnDown.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.MENU_DOWN.get(0).toInt(),
-//                RemoteControlHelper.Key.MENU_DOWN.get(1).toInt())
-//        }
-
-//        btnHome.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.HOME.get(0).toInt(),
-//                RemoteControlHelper.Key.HOME.get(1).toInt())
-//        }
-//
-//        btnVolInc.setOnClickListener {
-//            bluetoothService?.send( RemoteControlHelper.Key.VOLUME_INC.get(0).toInt(),
-//                RemoteControlHelper.Key.VOLUME_INC.get(1).toInt())
-//        }
-//
-//        btnVolDec.setOnClickListener{
-//            bluetoothService?.send( RemoteControlHelper.Key.VOLUME_DEC.get(0).toInt(),
-//                RemoteControlHelper.Key.VOLUME_DEC.get(1).toInt())
-//        }
-//
-//        btnBack.setOnClickListener{
-//            bluetoothService?.send( RemoteControlHelper.Key.BACK.get(0).toInt(),
-//                RemoteControlHelper.Key.BACK.get(1).toInt())
-//        }
-//
-//        btnMiddle.setOnClickListener{
-//            bluetoothService?.send( RemoteControlHelper.Key.MEDIA_SELECT_CD.get(0).toInt(),
-//                RemoteControlHelper.Key.MEDIA_SELECT_CD.get(1).toInt())
-//        }
-
 
 
 
@@ -392,6 +360,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
 
 //        addKeyBoardListeners(btnSource, 0x91);
 //
+        addRemoteKeyListeners(epg,RemoteControlHelper.Key.EPG)
         addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
         addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
         addRemoteKeyListeners(btnRight, RemoteControlHelper.Key.MENU_RIGHT)
@@ -402,21 +371,66 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
         addRemoteKeyListeners(btnVolInc, RemoteControlHelper.Key.VOLUME_INC)
         addRemoteKeyListeners(btnVolDec, RemoteControlHelper.Key.VOLUME_DEC)
-//        addRemoteKeyListeners(btnMute, RemoteControlHelper.Key.MUTE)
-//        addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
-//        addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
-//        addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
+        addRemoteKeyListeners(btnChUp,RemoteControlHelper.Key.CHANNEL_UP)
+        addRemoteKeyListeners(btnChDown,RemoteControlHelper.Key.CHANNEL_DOWN)
+        addRemoteKeyListeners(btnInfo,RemoteControlHelper.Key.INFO)
+        addRemoteKeyListeners(btn1,RemoteControlHelper.Key.NUM1)
+        addRemoteKeyListeners(btn2,RemoteControlHelper.Key.NUM2)
+        addRemoteKeyListeners(btnMagenta,RemoteControlHelper.Key.MAGENTA)
+        addRemoteKeyListeners(btnMute, RemoteControlHelper.Key.MUTE)
+        addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
+        addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
+        addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
 //        txtInput.setOnKeyListener(View.OnKeyListener { view: View?, keyCode: Int, keyEvent: KeyEvent? ->
-//            this.handleInputText(
-//                view,
-//                keyCode,
-//                keyEvent
-//            )
+//            if (view != null) {
+//                this.handleInputText(
+//                    view,
+//                    keyCode,
+//                    keyEvent
+//                )
+//            }
 //        })
 //        txtInput.setOnKeyListener(this::handleRealtimeInputText);
 //        txtInput.addTextChangedListener(getKeyTextWatcher());
 
     }
+
+//    private fun handleInputText(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
+//        if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_UP) {
+////            debug("onKey=" + txtInput.getText().toString());
+//            txtInput.getText().chars().forEach(IntConsumer { c: Int ->
+////                debug((char) c + "");
+//                if (KeyboardHelper.keyMap.containsKey(c.toChar())) { // Small case letter
+//                    KeyboardHelper.sendKeyDown(
+//                        KeyboardHelper.Modifier.NONE,
+//                        KeyboardHelper.getKey(c.toChar())
+//                    )
+//                    KeyboardHelper.sendKeyUp()
+//                } else if (KeyboardHelper.shiftKeyMap.containsKey(c.toChar())) { // Upper case letter
+//                    KeyboardHelper.sendKeyDown(
+//                        KeyboardHelper.Modifier.KEY_MOD_LSHIFT,
+//                        KeyboardHelper.getShiftKey(c.toChar())
+//                    )
+//                    KeyboardHelper.sendKeyUp()
+//                }
+//            })
+//            //            boolean sent = KeyboardHelper.sendKeyDown(KeyboardHelper.Modifier.NONE, KeyboardHelper.Key.ENTER);
+////            if (sent)
+//            MainActivity.vibrate()
+//            return true
+//        }
+//        if (keyCode == KeyEvent.KEYCODE_DEL && keyEvent.action == KeyEvent.ACTION_UP) {
+////            debug("onKey= BACKSPACE");
+//            val sent: Boolean = KeyboardHelper.sendKeyDown(
+//                KeyboardHelper.Modifier.NONE,
+//                KeyboardHelper.Key.BACKSPACE
+//            )
+//            KeyboardHelper.sendKeyUp()
+//            if (sent) MainActivity.vibrate()
+//            return true
+//        }
+//        return false
+//    }
 
     private fun setButtonsEnabled(enabled: Boolean) {
         for (button in buttons) {

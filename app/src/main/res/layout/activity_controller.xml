@@ -37,10 +37,10 @@
                     android:text="@string/btn_power" />
 
                 <Button
-                    android:id="@+id/btnPair"
+                    android:id="@+id/btnEpg"
                     style="@style/half_button_style"
-                    android:text="📶"
-                    android:visibility="invisible" />
+                    android:text="@string/EPG"
+                    android:visibility="visible" />
 
             </LinearLayout>
 
@@ -140,6 +140,57 @@
             </LinearLayout>
 
         </TableRow>
+        <TableRow>
+
+            <Button
+                android:id="@+id/btn1"
+                style="@style/full_button_style"
+                android:text="@string/btn_1" />
+
+            <Button
+                android:id="@+id/btn2"
+                style="@style/full_button_style"
+                android:text="@string/btn_2" />
+
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/info"
+                    style="@style/half_button_style"
+                    android:text="@string/btn_info"/>
+
+                <Button
+                    android:id="@+id/magenta"
+                    android:textSize="15sp"
+                    android:maxLines="1"
+                    style="@style/half_button_style"
+                    android:text="@string/magenta" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnChannelUp"
+                    style="@style/half_button_style"
+                    android:text="@string/ch_up"/>
+
+                <Button
+                    android:id="@+id/btnChannelDown"
+                    style="@style/half_button_style"
+                    android:text="@string/ch_down" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+
 
         <TableRow>
 

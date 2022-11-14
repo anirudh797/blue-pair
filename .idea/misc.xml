@@ -8,7 +8,10 @@
         <entry key="..\:/Users/kapti/AndroidStudioProjects/blue-pair2/app/src/main/res/layout/activity_main.xml" value="0.128" />
         <entry key="app/src/main/res/layout/activity_controller.xml" value="0.18659420289855072" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/content_controller.xml" value="0.23020833333333332" />
+        <entry key="app/src/main/res/layout/list_device_item.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/motification_buttons.xml" value="0.18541666666666667" />
+        <entry key="app/src/main/res/layout/notification_buttons.xml" value="0.23020833333333332" />
       </map>
     </option>
   </component>

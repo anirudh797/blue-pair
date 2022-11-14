@@ -1,7 +1,9 @@
 package co.aurasphere.bluetooth.bluetooth
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.support.annotation.IntDef
+import android.support.annotation.RequiresApi
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
@@ -106,27 +108,28 @@ object KeyboardHelper {
         Pair('?', 0x38)
     )
 
-    @SuppressLint("MissingPermission")
-//    fun sendKeyDown(@Modifier modifier: Int, code: Int,bluetoothSer): Boolean {
-//        return if (BluetoothHidService.bluetoothHidDevice != null && BluetoothHidService.isHidDeviceConnected) {
-//            BluetoothHidService.bluetoothHidDevice.sendReport(
-//                BluetoothHidService.bluetoothDevice,
-//                Constants.ID_KEYBOARD,
-//                KeyboardReport.getReport(modifier, code)
-//            )
-//        } else false
-//    }
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun sendKeyDown(@Modifier modifier: Int, code: Int,bluetoothController: BluetoothController): Boolean? {
+        return if (bluetoothController.bluetoothHidDevice != null && bluetoothController.isHidDeviceConnected ) {
+            bluetoothController?.bluetoothHidDevice?.sendReport(
+                bluetoothController.mmDevice,
+                Constants.ID_KEYBOARD.toInt(),
+                KeyboardReport.getReport(modifier, code)
+            )
+        }
+        else false
+    }
 
-    @SuppressLint("MissingPermission")
-//    fun sendKeyUp(): Boolean {
-//        return if (BluetoothHidService.bluetoothHidDevice != null && BluetoothHidService.isHidDeviceConnected) {
-//            BluetoothHidService.bluetoothHidDevice.sendReport(
-//                BluetoothHidService.bluetoothDevice,
-//                Constants.ID_KEYBOARD,
-//                KeyboardReport.getReport(0, 0)
-//            )
-//        } else false
-//    }
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun sendKeyUp(bluetoothController: BluetoothController): Boolean? {
+        return if (bluetoothController.bluetoothHidDevice != null && bluetoothController.isHidDeviceConnected) {
+            bluetoothController.bluetoothHidDevice?.sendReport(
+                bluetoothController.mmDevice,
+                Constants.ID_KEYBOARD.toInt(),
+                KeyboardReport.getReport(0, 0)
+            )
+        } else false
+    }
 
     fun getKey(c: Char): Int {
         return keyMap[c] ?: 0

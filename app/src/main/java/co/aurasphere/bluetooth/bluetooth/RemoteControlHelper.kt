@@ -1,6 +1,8 @@
 package co.aurasphere.bluetooth.bluetooth
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.support.annotation.RequiresApi
 
 object RemoteControlHelper {
 
@@ -9,7 +11,7 @@ object RemoteControlHelper {
             companion object {
                 var POWER = byteArrayOf(0x00.toByte(), 0x30.toByte())
                 var SLEEP = byteArrayOf(0x00.toByte(), 0x34.toByte())
-                var MENU = byteArrayOf(0x00.toByte(), 0x45.toByte())
+                var MENU = byteArrayOf(0x01.toByte(), 0xdd.toByte())
                 var MENU_PICK = byteArrayOf(0x00.toByte(), 0x41.toByte())
                 var MENU_UP = byteArrayOf(0x00.toByte(), 0x42.toByte())
                 var MENU_DOWN = byteArrayOf(0x00.toByte(), 0x43.toByte())
@@ -30,8 +32,6 @@ object RemoteControlHelper {
                 var MEDIA_SELECT_SATELLITE = byteArrayOf(0x00.toByte(), 0x98.toByte())
                 var MEDIA_SELECT_TV = byteArrayOf(0x00.toByte(), 0x89.toByte())
                 var MEDIA_SELECT_SAP = byteArrayOf(0x00.toByte(), 0x9e.toByte())
-                var CHANNEL_INC = byteArrayOf(0x00.toByte(), 0x9c.toByte())
-                var CHANNEL_DEC = byteArrayOf(0x00.toByte(), 0x9d.toByte())
                 var MEDIA_FAST_FORWARD = byteArrayOf(0x00.toByte(), 0xb3.toByte())
                 var MEDIA_REWIND = byteArrayOf(0x00.toByte(), 0xb4.toByte())
                 var CHANNEL_UP = byteArrayOf(0x00.toByte(), 0x9c.toByte())
@@ -41,19 +41,20 @@ object RemoteControlHelper {
 
                 var VOLUME_DEC = byteArrayOf(0x00.toByte(), 0xea.toByte())
                 var MUTE = byteArrayOf(0x00.toByte(), 0xe2.toByte())
-                var HOME = byteArrayOf(0x02.toByte(), 0x23.toByte())
+                    var HOME = byteArrayOf(0x02.toByte(), 0x23.toByte())
                 var BACK = byteArrayOf(0x02.toByte(), 0x24.toByte())
                 var QUIT = byteArrayOf(0x00.toByte(), 0x94.toByte())
 
                 var EPG = byteArrayOf(0x00.toByte(),0x8d.toByte())
-                var INFO = byteArrayOf(0x01.toByte(),0xdc.toByte())
-                var MAGENTA = byteArrayOf(0x00.toByte(),0x8d.toByte())
-                var NUM1 = byteArrayOf(0x00.toByte(),0x1e.toByte())
-                var NUM2 = byteArrayOf(0x00.toByte(),0x1f.toByte())
+                var INFO = byteArrayOf(0x00.toByte(),0x9b.toByte())
+//                var MAGENTA = byteArrayOf(0x00.toByte(),0x8d.toByte())
+//                var NUM1 = byteArrayOf(0x00.toByte(),0x1e.toByte())
+//                var NUM2 = byteArrayOf(0x00.toByte(),0x1f.toByte())
 
             }
         }
 
+        @RequiresApi(Build.VERSION_CODES.P)
         @SuppressLint("MissingPermission")
         fun sendKeyDown(byte1: Int, byte2: Int,bluetoothController: BluetoothController): Boolean {
             return if (bluetoothController.bluetoothHidDevice != null && bluetoothController.isHidDeviceConnected) {
@@ -64,6 +65,7 @@ object RemoteControlHelper {
             } else false
         }
 
+        @RequiresApi(Build.VERSION_CODES.P)
         @SuppressLint("MissingPermission")
         fun sendKeyUp(bluetoothController: BluetoothController): Boolean {
             return if (bluetoothController.bluetoothHidDevice != null && bluetoothController.isHidDeviceConnected) {

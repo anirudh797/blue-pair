@@ -23,30 +23,33 @@
  */
 package co.aurasphere.bluetooth
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
+import android.bluetooth.*
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.inputmethodservice.Keyboard
 import android.os.*
-import android.support.annotation.RequiresApi
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.app.RemoteInput
+import androidx.recyclerview.widget.LinearLayoutManager
 import co.aurasphere.bluetooth.bluetooth.*
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.getDeviceName
 import co.aurasphere.bluetooth.view.DeviceRecyclerViewAdapter
 import co.aurasphere.bluetooth.view.ListInteractionListener
 import co.aurasphere.bluetooth.view.RecyclerViewProgressEmptySupport
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
 import java.util.function.IntConsumer
 
@@ -56,11 +59,13 @@ import java.util.function.IntConsumer
  *
  * @author Donato Rimenti
  */
-class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevice?> {
+class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevice?> {
     /**
      * The controller for Bluetooth functionalities.
      */
     private var bluetoothService: BluetoothController? = null
+
+    private lateinit var keyboardPeripheral : RemoteInput
 
     /**
      * The Bluetooth discovery button.
@@ -81,6 +86,14 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
     private var recyclerView: RecyclerViewProgressEmptySupport? = null
     private var deviceConnectedLayout : RelativeLayout ? = null
     private var controllerLayout : TableLayout? = null
+    lateinit var txtInput : EditText
+    lateinit var mGatt: BluetoothGatt
+
+    val accessFineLocationPermission
+    get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    val coarseLocationPermission
+    get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     /**
      * {@inheritDoc}
@@ -96,8 +109,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         setContentView(R.layout.activity_main)
         vibrator = getSystemService(Vibrator::class.java)
 
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
+//        setSupportActionBar(toolbar)
 
         assignButtonActions()
 
@@ -126,7 +138,8 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            bluetoothService?.sendMessage(obj.toString())
+            RemoteControlReport.getReport(RemoteControlHelper.Key.BACK[0].toInt(),RemoteControlHelper.Key.BACK[1].toInt())
+                ?.let { it1 -> bluetoothService?.sendMessage(it1) }
         }
         // Sets the view to show during progress.
         val progressBar = findViewById<View>(R.id.progressBar) as ProgressBar
@@ -172,8 +185,9 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         fab = findViewById<View>(R.id.fab) as FloatingActionButton
         fab!!.setOnClickListener { view ->
             // If the bluetooth is not enabled, turns it on.
-            if (!bluetoothService!!.isBluetoothEnabled) {
+            if (!bluetoothService!!.isBluetoothEnabled && checkForLocationPermissions()) {
                 Snackbar.make(view, R.string.enabling_bluetooth, Snackbar.LENGTH_SHORT).show()
+//                checkPermissions()
                 bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
             } else {
                 //Prevents the user from spamming the button and thus glitching the UI.
@@ -181,6 +195,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
                     // Starts the discovery.
                     Snackbar.make(view, R.string.device_discovery_started, Snackbar.LENGTH_SHORT)
                         .show()
+//                    checkPermissions()
                     bluetoothService!!.startDiscovery()
                 } else {
                     Snackbar.make(view, R.string.device_discovery_stopped, Snackbar.LENGTH_SHORT)
@@ -188,6 +203,93 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
                     bluetoothService!!.cancelDiscovery()
                 }
             }
+        }
+    }
+
+    fun checkForLocationPermissions() : Boolean{
+
+        if(accessFineLocationPermission && coarseLocationPermission) return true
+
+        else {
+            locationPermissionRequest.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return true
+        }
+    }
+
+    val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                // Precise location access granted.
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                // Only approximate location access granted.
+            } else -> {
+            // No location access granted.
+        }
+        }
+    }
+
+
+
+    val PERMISSIONS_LOCATION = arrayOf( Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
+        Manifest.permission.BLUETOOTH_ADMIN,
+        Manifest.permission_group.LOCATION,
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_PRIVILEGED)
+
+    fun checkPermissions() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+            ) {
+                bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
+                bluetoothService?.startDiscovery()
+
+            } else {
+
+                ActivityCompat.requestPermissions(
+                    this,
+                    getRequiredPermissions(), 1
+                );
+            }
+        }
+
+    }
+
+
+    private fun getRequiredPermissions(): Array<String>{
+        val targetSdkVersion = applicationInfo.targetSdkVersion
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && targetSdkVersion >= Build.VERSION_CODES.R) {
+            arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && targetSdkVersion >= Build.VERSION_CODES.Q) {
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 ) {
+
+            bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
+            bluetoothService?.startDiscovery()
+
+        } else {
+            checkPermissions()
         }
     }
 
@@ -203,13 +305,6 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
      * {@inheritDoc}
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-        if (id == R.id.action_about) {
-            return true
-        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -226,9 +321,6 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
 //        }
     }
 
-    fun prepareAndStartForeground(){
-
-    }
 
 
 //    @RequiresApi(Build.VERSION_CODES.O)
@@ -291,7 +383,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
 //                v
 //            )
 //        }
-        val txtInput : EditText = findViewById(R.id.txtInput)
+         txtInput = findViewById(R.id.txtInput)
         val btnLeft: Button = findViewById(R.id.btnLeft)
         val btnRight: Button = findViewById(R.id.btnRight)
         val btnUp: Button = findViewById(R.id.btnUp)
@@ -308,8 +400,8 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         val cancelController : Button = findViewById(R.id.btn_cancel_controller)
         val btnChUp : Button = findViewById(R.id.btnChannelUp)
         val btnChDown : Button = findViewById(R.id.btnChannelDown)
-        val btn1 : Button = findViewById(R.id.btn1)
-        val btn2 : Button = findViewById(R.id.btn2)
+        val btnRecord : Button = findViewById(R.id.record)
+//        val btn2 : Button = findViewById(R.id.btn2)
         val epg : Button = findViewById(R.id.btnEpg)
         val btnInfo : Button = findViewById(R.id.info)
         val btnMagenta : Button = findViewById(R.id.btnMagenta)
@@ -339,27 +431,15 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         buttons.add(btnChUp)
         buttons.add(btnChDown)
         buttons.apply {
-            add(btn1)
-            add(btn2)
+            add(btnRecord)
             add(btnInfo)
             add(epg)
             add(btnMagenta)
         }
+        //        addKeyBoardListeners(btnSource, 0x91);
         //        buttons.add(btnSource);
         setButtonsEnabled(true)
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
-
-
-
-
-
-
-
-//        addRemoteKeysListeners(btnSource, RemoteControlHelper.Key.ASSIGN_SELECTION, RemoteControlHelper.Key.MEDIA_SELECT_CD);
-//        addRemoteKeyListeners(btnPair, RemoteControlHelper.Key.MEDIA_SELECT_CD);
-
-//        addKeyBoardListeners(btnSource, 0x91);
-//
         addRemoteKeyListeners(epg,RemoteControlHelper.Key.EPG)
         addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
         addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
@@ -374,63 +454,62 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         addRemoteKeyListeners(btnChUp,RemoteControlHelper.Key.CHANNEL_UP)
         addRemoteKeyListeners(btnChDown,RemoteControlHelper.Key.CHANNEL_DOWN)
         addRemoteKeyListeners(btnInfo,RemoteControlHelper.Key.INFO)
-        addRemoteKeyListeners(btn1,RemoteControlHelper.Key.NUM1)
-        addRemoteKeyListeners(btn2,RemoteControlHelper.Key.NUM2)
+        addRemoteKeyListeners(btnRecord,RemoteControlHelper.Key.RECORD)
         addRemoteKeyListeners(btnMagenta,RemoteControlHelper.Key.MAGENTA)
         addRemoteKeyListeners(btnMute, RemoteControlHelper.Key.MUTE)
         addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
         addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
         addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
-//        txtInput.setOnKeyListener(View.OnKeyListener { view: View?, keyCode: Int, keyEvent: KeyEvent? ->
-//            if (view != null) {
-//                this.handleInputText(
-//                    view,
-//                    keyCode,
-//                    keyEvent
-//                )
-//            }
-//        })
-//        txtInput.setOnKeyListener(this::handleRealtimeInputText);
-//        txtInput.addTextChangedListener(getKeyTextWatcher());
+        txtInput.setOnKeyListener(this :: handleInputText)
 
     }
 
-//    private fun handleInputText(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
-//        if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_UP) {
-////            debug("onKey=" + txtInput.getText().toString());
-//            txtInput.getText().chars().forEach(IntConsumer { c: Int ->
-////                debug((char) c + "");
-//                if (KeyboardHelper.keyMap.containsKey(c.toChar())) { // Small case letter
-//                    KeyboardHelper.sendKeyDown(
-//                        KeyboardHelper.Modifier.NONE,
-//                        KeyboardHelper.getKey(c.toChar())
-//                    )
-//                    KeyboardHelper.sendKeyUp()
-//                } else if (KeyboardHelper.shiftKeyMap.containsKey(c.toChar())) { // Upper case letter
-//                    KeyboardHelper.sendKeyDown(
-//                        KeyboardHelper.Modifier.KEY_MOD_LSHIFT,
-//                        KeyboardHelper.getShiftKey(c.toChar())
-//                    )
-//                    KeyboardHelper.sendKeyUp()
-//                }
-//            })
-//            //            boolean sent = KeyboardHelper.sendKeyDown(KeyboardHelper.Modifier.NONE, KeyboardHelper.Key.ENTER);
-////            if (sent)
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun handleInputText(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_UP) {
+//            debug("onKey=" + txtInput.getText().toString());
+            txtInput.getText().chars().forEach(IntConsumer { c: Int ->
+//                debug((char) c + "");
+                if (KeyboardHelper.keyMap.containsKey(c.toChar())) { // Small case letter
+                    bluetoothService?.let {
+                        KeyboardHelper.sendKeyDown(
+                            KeyboardHelper.Modifier.NONE,
+                            KeyboardHelper.getKey(c.toChar()),
+                            it
+                        )
+                    }
+                    bluetoothService?.let { KeyboardHelper.sendKeyUp(it) }
+                } else if (KeyboardHelper.shiftKeyMap.containsKey(c.toChar())) { // Upper case letter
+                    bluetoothService?.let {
+                        KeyboardHelper.sendKeyDown(
+                            KeyboardHelper.Modifier.KEY_MOD_LSHIFT,
+                            KeyboardHelper.getShiftKey(c.toChar()),
+                            it
+                        )
+                    }
+                    bluetoothService?.let { KeyboardHelper.sendKeyUp(it) }
+                }
+            })
+            //            boolean sent = KeyboardHelper.sendKeyDown(KeyboardHelper.Modifier.NONE, KeyboardHelper.Key.ENTER);
+//            if (sent)
 //            MainActivity.vibrate()
-//            return true
-//        }
-//        if (keyCode == KeyEvent.KEYCODE_DEL && keyEvent.action == KeyEvent.ACTION_UP) {
-////            debug("onKey= BACKSPACE");
-//            val sent: Boolean = KeyboardHelper.sendKeyDown(
-//                KeyboardHelper.Modifier.NONE,
-//                KeyboardHelper.Key.BACKSPACE
-//            )
-//            KeyboardHelper.sendKeyUp()
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_DEL && keyEvent.action == KeyEvent.ACTION_UP) {
+//            debug("onKey= BACKSPACE");
+            val sent: Boolean = bluetoothService?.let {
+                KeyboardHelper.sendKeyDown(
+                    KeyboardHelper.Modifier.NONE,
+                    KeyboardHelper.Key.BACKSPACE,
+                    it
+                )
+            } == true
+            bluetoothService?.let { KeyboardHelper.sendKeyUp(it) }
 //            if (sent) MainActivity.vibrate()
-//            return true
-//        }
-//        return false
-//    }
+            return true
+        }
+        return false
+    }
 
     private fun setButtonsEnabled(enabled: Boolean) {
         for (button in buttons) {
@@ -438,9 +517,22 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("ClickableViewAccessibility")
     private fun addRemoteKeyListeners(button: Button,  keys: ByteArray) {
+
         button.setOnTouchListener { view: View?, motionEvent: MotionEvent ->
+            if(view?.id?.equals(R.id.btnMenu) == true ){
+                bluetoothService?.let {
+                    RemoteControlHelper.sendKeyDown0(0x01,0xdd,it)
+//                    RemoteControlHelper.sendKeyDown(0x01,0xdd,it)
+                }
+                bluetoothService?.let {
+                   RemoteControlHelper.sendKeyUp(it)
+                }
+                false
+            }
+
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                 val sent = bluetoothService?.let {
                     RemoteControlHelper.sendKeyDown(
@@ -529,6 +621,7 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         runOnUiThread {
             controllerLayout?.visibility = View.GONE
             recyclerView?.visibility = View.VISIBLE
+            fab?.visibility = View.VISIBLE
         }
     }
 
@@ -618,6 +711,8 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
         if (bluetoothService!!.isAlreadyPaired(device)) {
             if (device != null) {
                 bluetoothService!!.connectToDevice(device)
+//                bluetoothService.sendMessage()
+//                connectToDevice(device)
             }
             for(uuid in device?.uuids!!){
                 Log.d(TAG,"$uuid")
@@ -645,6 +740,75 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
             }
         }
     }
+    fun connectToDevice(device: BluetoothDevice) {
+            mGatt = device.connectGatt(this, false, gattCallback)
+    }
+
+    private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            Log.i("onConnectionStateChange", "Status: $status")
+            when (newState) {
+                BluetoothProfile.STATE_CONNECTED -> {
+                    Log.i("gattCallback", "STATE_CONNECTED")
+                    gatt.discoverServices()
+                }
+                BluetoothProfile.STATE_DISCONNECTED -> Log.e("gattCallback", "STATE_DISCONNECTED")
+                else -> Log.e("gattCallback", "STATE_OTHER")
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            val services = gatt.services
+            Log.i("onServicesDiscovered", services.toString())
+            gatt.readCharacteristic(services[1].characteristics[0])
+        }
+
+        override fun onCharacteristicRead(
+            gatt: BluetoothGatt,
+            characteristic: BluetoothGattCharacteristic, status: Int
+        ) {
+            Log.i("onCharacteristicRead", characteristic.toString())
+            gatt.disconnect()
+        }
+    }
+
+//    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
+//        if (gattServices == null) return
+//        var uuid: String?
+//        val unknownServiceString: String = resources.getString(R.string.unknown_service)
+//        val unknownCharaString: String = resources.getString(R.string.unknown_characteristic)
+//        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
+//        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
+//            mutableListOf()
+//        mGattCharacteristics = mutableListOf()
+//
+//        // Loops through available GATT Services.
+//        gattServices.forEach { gattService ->
+//            val currentServiceData = HashMap<String, String>()
+//            uuid = gattService.uuid.toString()
+//            currentServiceData[LIST_NAME] = SampleGattAttributes.lookup(uuid, unknownServiceString)
+//            currentServiceData[LIST_UUID] = uuid
+//            gattServiceData += currentServiceData
+//
+//            val gattCharacteristicGroupData: ArrayList<HashMap<String, String>> = arrayListOf()
+//            val gattCharacteristics = gattService.characteristics
+//            val charas: MutableList<BluetoothGattCharacteristic> = mutableListOf()
+//
+//            // Loops through available Characteristics.
+//            gattCharacteristics.forEach { gattCharacteristic ->
+//                charas += gattCharacteristic
+//                val currentCharaData: HashMap<String, String> = hashMapOf()
+//                uuid = gattCharacteristic.uuid.toString()
+//                currentCharaData[LIST_NAME] = SampleGattAttributes.lookup(uuid, unknownCharaString)
+//                currentCharaData[LIST_UUID] = uuid
+//                gattCharacteristicGroupData += currentCharaData
+//            }
+//            mGattCharacteristics += charas
+//            gattCharacteristicData += gattCharacteristicGroupData
+//        }
+//    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateView() {
@@ -658,10 +822,12 @@ class MainActivity : AppCompatActivity(), ListInteractionListener<BluetoothDevic
             recyclerView?.visibility = View.GONE
             controllerLayout?.visibility = View.VISIBLE
             findViewById<Button>(R.id.btn_listen).visibility = View.GONE
+            fab?.visibility = View.GONE
         }
 
         else{
             findViewById<Button>(R.id.btn_listen).visibility = View.VISIBLE
+            fab?.visibility = View.VISIBLE
             Toast.makeText(this,"Unable to connect to server",Toast.LENGTH_SHORT).show()
         }
 

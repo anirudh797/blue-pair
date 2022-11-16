@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
@@ -74,7 +74,7 @@
                 <Button
                     android:id="@+id/btnMenu"
                     style="@style/half_button_style"
-                    android:text="@string/btn_gear" />
+                    android:text="@string/btn_opt" />
 
                 <Button
                     android:id="@+id/btnMute"
@@ -161,14 +161,15 @@
         <TableRow>
 
             <Button
-                android:id="@+id/btn1"
+                android:id="@+id/record"
                 style="@style/full_button_style"
-                android:text="@string/btn_1" />
+                android:textSize="15sp"
+                android:text="@string/record" />
 
-            <Button
-                android:id="@+id/btn2"
-                style="@style/full_button_style"
-                android:text="@string/btn_2" />
+<!--            <Button-->
+<!--                android:id="@+id/btn2"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_2" />-->
 
             <LinearLayout
                 android:layout_height="match_parent"
@@ -183,6 +184,7 @@
                 <Button
                     android:id="@+id/btnMagenta"
                     android:textSize="15sp"
+                    android:visibility="invisible"
                     android:maxLines="1"
                     style="@style/half_button_style"
                     android:text="@string/magenta" />
@@ -261,13 +263,13 @@
         android:text="@string/empty_list_message"
         android:textAlignment="center" />
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay"
         app:elevation="0dp">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -275,9 +277,9 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -372,4 +374,4 @@
 
     </RelativeLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

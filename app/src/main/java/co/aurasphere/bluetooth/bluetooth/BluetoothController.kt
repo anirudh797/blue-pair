@@ -26,16 +26,17 @@ package co.aurasphere.bluetooth.bluetooth
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.*
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 import android.widget.Toast
 import android.os.Bundle
 import android.os.Build
 import android.os.Handler
-import android.support.annotation.RequiresApi
+import androidx.core.content.ContextCompat.checkSelfPermission
 import android.util.Log
 import android.view.KeyEvent
+import androidx.annotation.RequiresApi
 import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
@@ -159,14 +160,15 @@ class BluetoothController(
         // This line of code is very important. In Android >= 6.0 you have to ask for the runtime
         // permission as well in order for the discovery to get the devices ids. If you don't do
         // this, the discovery won't find any device.
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                context, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                1
-            )
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            if (checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(context,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//                turnOnBluetoothAndScheduleDiscovery()
+//
+//            } else {
+//                ActivityCompat.requestPermissions(context, arrayOf(
+//                    Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1);
+//            }
+//        }
 
         // If another discovery is in progress, cancels it before starting the new one.
         if (bluetooth!!.isDiscovering) {
@@ -206,6 +208,7 @@ class BluetoothController(
 //            // for ActivityCompat#requestPermissions for more details.
 //            return
 //        }
+        if(bluetooth?.isEnabled == false)
         bluetooth!!.enable()
     }
 
@@ -347,10 +350,10 @@ class BluetoothController(
         }
 
 
-    fun sendMessage( message : String)
+    fun sendMessage( message : ByteArray)
     {
         Log.e(TAG,"Attempting to send message : $message")
-        readWriteThread?.write(message.toByteArray())
+        readWriteThread?.write(message)
         KeyEvent.keyCodeToString(KeyEvent.KEYCODE_1)
     }
 
@@ -649,16 +652,11 @@ class BluetoothController(
         }
 
         override fun onServiceDisconnected(profile: Int) {
+
         }
 
 
     }
-
-    fun sendBroadcast(){
-
-
-    }
-
 
      inner class AcceptThread : Thread() {
 

@@ -25,7 +25,6 @@ package co.aurasphere.bluetooth.view
 
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 import android.bluetooth.BluetoothDevice
-import android.support.v7.widget.RecyclerView
 import co.aurasphere.bluetooth.bluetooth.BluetoothDiscoveryDeviceListener
 import co.aurasphere.bluetooth.bluetooth.BluetoothController
 import android.view.ViewGroup
@@ -34,6 +33,7 @@ import android.view.View
 import android.widget.ImageView
 import co.aurasphere.bluetooth.R
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import java.util.ArrayList
 
 /**

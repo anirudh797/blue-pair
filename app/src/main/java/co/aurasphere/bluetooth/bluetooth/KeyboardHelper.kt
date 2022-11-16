@@ -2,8 +2,7 @@ package co.aurasphere.bluetooth.bluetooth
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.support.annotation.IntDef
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
@@ -150,6 +149,7 @@ object KeyboardHelper {
             var KEY_MOD_RSHIFT = 0x20
             var KEY_MOD_RALT = 0x40
             var KEY_MOD_RMETA = 0x80
+            var N = 0x00
         }
     }
 

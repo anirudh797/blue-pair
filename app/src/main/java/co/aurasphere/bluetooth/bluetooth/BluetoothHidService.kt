@@ -9,8 +9,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.os.Message
-import android.support.annotation.Nullable
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.widget.RemoteViews
 import co.aurasphere.bluetooth.MainActivity

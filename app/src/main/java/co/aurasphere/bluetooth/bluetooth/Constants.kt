@@ -24,6 +24,7 @@ object Constants {
     val BAS_UUID = ParcelUuid.fromString("0000180F-0000-1000-8000-00805F9B34FB")
     const val ID_KEYBOARD: Byte = 1
     const val ID_REMOTE_CONTROL: Byte = 2
+    const val ENABLE_BT = 10
     private val HID_REPORT_DESC = byteArrayOf(
         0x05.toByte(),
         0x01.toByte(),

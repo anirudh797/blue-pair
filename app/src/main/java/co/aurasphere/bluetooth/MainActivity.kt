@@ -27,11 +27,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.bluetooth.*
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.inputmethodservice.Keyboard
 import android.os.*
+import android.provider.Settings
+import android.provider.Settings.SettingNotFoundException
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -65,7 +68,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
      */
     private var bluetoothService: BluetoothController? = null
 
-    private lateinit var keyboardPeripheral : RemoteInput
+    private lateinit var keyboardPeripheral: RemoteInput
 
     /**
      * The Bluetooth discovery button.
@@ -73,27 +76,35 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     private var fab: FloatingActionButton? = null
 
     lateinit var vibrator: Vibrator
+
     /**
      * Progress dialog shown during the pairing process.
      */
     private var bondingProgressDialog: ProgressDialog? = null
-    lateinit var buttons : ArrayList<Button>
+    lateinit var buttons: ArrayList<Button>
 
     /**
      * Adapter for the recycler view.
      */
     private var recyclerViewAdapter: DeviceRecyclerViewAdapter? = null
     private var recyclerView: RecyclerViewProgressEmptySupport? = null
-    private var deviceConnectedLayout : RelativeLayout ? = null
-    private var controllerLayout : TableLayout? = null
-    lateinit var txtInput : EditText
+    private var deviceConnectedLayout: RelativeLayout? = null
+    private var controllerLayout: TableLayout? = null
+    lateinit var txtInput: EditText
     lateinit var mGatt: BluetoothGatt
 
     val accessFineLocationPermission
-    get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     val coarseLocationPermission
-    get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        get() = checkCallingOrSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    val bluetoothScanPermission
+        get() = checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
+
+    val bluetoothConnectPermission
+        get() = checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+
 
     /**
      * {@inheritDoc}
@@ -116,7 +127,8 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
         controllerLayout = findViewById<RelativeLayout>(R.id.controller_view) as TableLayout
 
-        deviceConnectedLayout = findViewById<RelativeLayout>(R.id.layout_connected) as RelativeLayout
+        deviceConnectedLayout =
+            findViewById<RelativeLayout>(R.id.layout_connected) as RelativeLayout
 
 
         // Sets up the RecyclerView.
@@ -129,16 +141,19 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         val emptyView = findViewById<View>(R.id.empty_list)
         recyclerView!!.setEmptyView(emptyView)
 
-        findViewById<Button>(R.id.btn_send).setOnClickListener{
+        findViewById<Button>(R.id.btn_send).setOnClickListener {
             val obj = JSONObject()
             try {
                 obj.put("type", "KEY")
                 obj.put("keylist", findViewById<EditText>(R.id.et_send).text.toString())
-                obj.put("pressed",true)
+                obj.put("pressed", true)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            RemoteControlReport.getReport(RemoteControlHelper.Key.BACK[0].toInt(),RemoteControlHelper.Key.BACK[1].toInt())
+            RemoteControlReport.getReport(
+                RemoteControlHelper.Key.BACK[0].toInt(),
+                RemoteControlHelper.Key.BACK[1].toInt()
+            )
                 ?.let { it1 -> bluetoothService?.sendMessage(it1) }
         }
         // Sets the view to show during progress.
@@ -178,38 +193,92 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
 
         findViewById<Button>(R.id.btn_listen).setOnClickListener {
-            Log.d(TAG,"Attempt to receive messages ")
+            Log.d(TAG, "Attempt to receive messages ")
             listenForConnection()
         }
 
         fab = findViewById<View>(R.id.fab) as FloatingActionButton
         fab!!.setOnClickListener { view ->
             // If the bluetooth is not enabled, turns it on.
-            if (!bluetoothService!!.isBluetoothEnabled && checkForLocationPermissions()) {
+            if (!bluetoothService!!.isBluetoothEnabled) {
                 Snackbar.make(view, R.string.enabling_bluetooth, Snackbar.LENGTH_SHORT).show()
-//                checkPermissions()
-                bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
+                if (checkForBluetoothAndLocationPermission())
+                    bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
+                else {
+                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 //Prevents the user from spamming the button and thus glitching the UI.
-                if (!bluetoothService!!.isDiscovering) {
-                    // Starts the discovery.
-                    Snackbar.make(view, R.string.device_discovery_started, Snackbar.LENGTH_SHORT)
-                        .show()
-//                    checkPermissions()
-                    bluetoothService!!.startDiscovery()
+                if (checkForBluetoothAndLocationPermission()) {
+                    if (!bluetoothService!!.isDiscovering) {
+                        // Starts the discovery.
+                        Snackbar.make(
+                            view,
+                            R.string.device_discovery_started,
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .show()
+                        bluetoothService!!.startDiscovery()
+                    } else {
+                        Snackbar.make(
+                            view,
+                            R.string.device_discovery_stopped,
+                            Snackbar.LENGTH_SHORT
+                        )
+                            .show()
+                        bluetoothService!!.cancelDiscovery()
+                    }
                 } else {
-                    Snackbar.make(view, R.string.device_discovery_stopped, Snackbar.LENGTH_SHORT)
-                        .show()
-                    bluetoothService!!.cancelDiscovery()
+
                 }
+
             }
         }
     }
 
-    fun checkForLocationPermissions() : Boolean{
+    fun isLocationEnabled(context: Context): Boolean {
+        var locationMode = 0
+        val locationProviders: String
 
-        if(accessFineLocationPermission && coarseLocationPermission) return true
+        locationMode = try {
+            Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE)
+        } catch (e: SettingNotFoundException) {
+            e.printStackTrace()
+            return false
+        }
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF
+    }
 
+
+    fun checkForBluetoothAndLocationPermission(): Boolean {
+        if (checkForLocationPermissions() && checkForBluetoothPermissions()) {
+            return true
+        }
+
+
+        return false
+    }
+
+    fun checkForBluetoothPermissions(): Boolean {
+
+        if (bluetoothScanPermission && bluetoothConnectPermission) return true
+        else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                bluetoothPermissionRequest.launch(
+                    arrayOf(
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    )
+                )
+            }
+            return bluetoothScanPermission && bluetoothConnectPermission
+        }
+
+    }
+
+    fun checkForLocationPermissions(): Boolean {
+
+        if (accessFineLocationPermission && coarseLocationPermission && isLocationEnabled(this)) return true
         else {
             locationPermissionRequest.launch(
                 arrayOf(
@@ -217,7 +286,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
-            return true
+            return accessFineLocationPermission && coarseLocationPermission
         }
     }
 
@@ -227,24 +296,52 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
                 // Precise location access granted.
+                Toast.makeText(this, "Precise location access granted", Toast.LENGTH_SHORT).show()
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
-            } else -> {
-            // No location access granted.
+                Toast.makeText(this, "Coarse location access granted", Toast.LENGTH_SHORT).show()
+
+            }
+            else -> {
+                Toast.makeText(this, "No location access granted", Toast.LENGTH_SHORT).show()
+
+                // No location access granted.
+            }
         }
+    }
+
+    val bluetoothPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.BLUETOOTH_SCAN, false) -> {
+                // Precise location access granted.
+                Toast.makeText(this, "Bluetooth scan permission granted", Toast.LENGTH_SHORT).show()
+            }
+            permissions.getOrDefault(Manifest.permission.BLUETOOTH_CONNECT, false) -> {
+                // Only approximate location access granted.
+                Toast.makeText(this, "Bluetooth permission granted", Toast.LENGTH_SHORT).show()
+
+            }
+            else -> {
+                Toast.makeText(this, "No bluetooth permission granted", Toast.LENGTH_SHORT).show()
+
+                // No location access granted.
+            }
         }
     }
 
 
-
-    val PERMISSIONS_LOCATION = arrayOf( Manifest.permission.ACCESS_FINE_LOCATION,
+    val PERMISSIONS_LOCATION = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
         Manifest.permission.BLUETOOTH_ADMIN,
         Manifest.permission_group.LOCATION,
         Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_PRIVILEGED)
+        Manifest.permission.BLUETOOTH_PRIVILEGED
+    )
 
     fun checkPermissions() {
 
@@ -267,7 +364,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     }
 
 
-    private fun getRequiredPermissions(): Array<String>{
+    private fun getRequiredPermissions(): Array<String> {
         val targetSdkVersion = applicationInfo.targetSdkVersion
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && targetSdkVersion >= Build.VERSION_CODES.R) {
             arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
@@ -283,7 +380,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1 ) {
+        if (requestCode == 1) {
 
             bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
             bluetoothService?.startDiscovery()
@@ -322,7 +419,6 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     }
 
 
-
 //    @RequiresApi(Build.VERSION_CODES.O)
 //    private fun startService() {
 //
@@ -339,12 +435,9 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //    }
 
 
-
-
-
     private fun stopService() {
 //        val serviceIntent = Intent(this, BluetoothHidService::class.java)
-        val serviceIntent = Intent(this,MyService::class.java)
+        val serviceIntent = Intent(this, MyService::class.java)
         stopService(serviceIntent)
     }
 
@@ -383,7 +476,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //                v
 //            )
 //        }
-         txtInput = findViewById(R.id.txtInput)
+        txtInput = findViewById(R.id.txtInput)
         val btnLeft: Button = findViewById(R.id.btnLeft)
         val btnRight: Button = findViewById(R.id.btnRight)
         val btnUp: Button = findViewById(R.id.btnUp)
@@ -397,14 +490,14 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         val btnPlayPause: Button = findViewById(R.id.btnPlayPause)
         val btnRewind: Button = findViewById(R.id.btnRewind)
         val btnForward: Button = findViewById(R.id.btnForward)
-        val cancelController : Button = findViewById(R.id.btn_cancel_controller)
-        val btnChUp : Button = findViewById(R.id.btnChannelUp)
-        val btnChDown : Button = findViewById(R.id.btnChannelDown)
-        val btnRecord : Button = findViewById(R.id.record)
+        val cancelController: Button = findViewById(R.id.btn_cancel_controller)
+        val btnChUp: Button = findViewById(R.id.btnChannelUp)
+        val btnChDown: Button = findViewById(R.id.btnChannelDown)
+        val btnRecord: Button = findViewById(R.id.record)
 //        val btn2 : Button = findViewById(R.id.btn2)
-        val epg : Button = findViewById(R.id.btnEpg)
-        val btnInfo : Button = findViewById(R.id.info)
-        val btnMagenta : Button = findViewById(R.id.btnMagenta)
+        val epg: Button = findViewById(R.id.btnEpg)
+        val btnInfo: Button = findViewById(R.id.info)
+        val btnMagenta: Button = findViewById(R.id.btnMagenta)
 
 
         cancelController.setOnClickListener {
@@ -412,7 +505,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             updateViewForDeviceList()
         }
 
-         buttons = ArrayList<Button>()
+        buttons = ArrayList<Button>()
         buttons.add(btnLeft)
         buttons.add(btnRight)
         buttons.add(btnUp)
@@ -440,7 +533,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         //        buttons.add(btnSource);
         setButtonsEnabled(true)
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
-        addRemoteKeyListeners(epg,RemoteControlHelper.Key.EPG)
+        addRemoteKeyListeners(epg, RemoteControlHelper.Key.EPG)
         addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
         addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
         addRemoteKeyListeners(btnRight, RemoteControlHelper.Key.MENU_RIGHT)
@@ -451,16 +544,16 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
         addRemoteKeyListeners(btnVolInc, RemoteControlHelper.Key.VOLUME_INC)
         addRemoteKeyListeners(btnVolDec, RemoteControlHelper.Key.VOLUME_DEC)
-        addRemoteKeyListeners(btnChUp,RemoteControlHelper.Key.CHANNEL_UP)
-        addRemoteKeyListeners(btnChDown,RemoteControlHelper.Key.CHANNEL_DOWN)
-        addRemoteKeyListeners(btnInfo,RemoteControlHelper.Key.INFO)
-        addRemoteKeyListeners(btnRecord,RemoteControlHelper.Key.RECORD)
-        addRemoteKeyListeners(btnMagenta,RemoteControlHelper.Key.MAGENTA)
+        addRemoteKeyListeners(btnChUp, RemoteControlHelper.Key.CHANNEL_UP)
+        addRemoteKeyListeners(btnChDown, RemoteControlHelper.Key.CHANNEL_DOWN)
+        addRemoteKeyListeners(btnInfo, RemoteControlHelper.Key.INFO)
+        addRemoteKeyListeners(btnRecord, RemoteControlHelper.Key.RECORD)
+        addRemoteKeyListeners(btnMagenta, RemoteControlHelper.Key.MAGENTA)
         addRemoteKeyListeners(btnMute, RemoteControlHelper.Key.MUTE)
         addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
         addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
         addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
-        txtInput.setOnKeyListener(this :: handleInputText)
+        txtInput.setOnKeyListener(this::handleInputText)
 
     }
 
@@ -519,16 +612,16 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("ClickableViewAccessibility")
-    private fun addRemoteKeyListeners(button: Button,  keys: ByteArray) {
+    private fun addRemoteKeyListeners(button: Button, keys: ByteArray) {
 
         button.setOnTouchListener { view: View?, motionEvent: MotionEvent ->
-            if(view?.id?.equals(R.id.btnMenu) == true ){
+            if (view?.id?.equals(R.id.btnMenu) == true) {
                 bluetoothService?.let {
-                    RemoteControlHelper.sendKeyDown0(0x01,0xdd,it)
+                    RemoteControlHelper.sendKeyDown0(0x01, 0xdd, it)
 //                    RemoteControlHelper.sendKeyDown(0x01,0xdd,it)
                 }
                 bluetoothService?.let {
-                   RemoteControlHelper.sendKeyUp(it)
+                    RemoteControlHelper.sendKeyUp(it)
                 }
                 false
             }
@@ -553,20 +646,20 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     /**
      * The Handler that gets information back from the BluetoothChatService
      */
-     val mHandler: Handler = @SuppressLint("HandlerLeak")
+    val mHandler: Handler = @SuppressLint("HandlerLeak")
     object : Handler() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun handleMessage(msg: Message) {
 
             Log.d("Message", msg.what.toString())
             //            FragmentActivity activity = getActivity();
-            when(msg.what) {
+            when (msg.what) {
 
-                MessageConstants.CONNECTION_SUCCESSFULL ->{
+                MessageConstants.CONNECTION_SUCCESSFULL -> {
                     updateView()
                 }
 
-                MessageConstants.CONNECTION_FAILED->{
+                MessageConstants.CONNECTION_FAILED -> {
                     updateViewForDeviceList()
                 }
 //                case Constants.MESSAGE_STATE_CHANGE:
@@ -584,20 +677,20 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //                            break;
 //                    }
 //                    break;
-                 MessageConstants.MESSAGE_WRITE -> {
+                MessageConstants.MESSAGE_WRITE -> {
 //                    val writeBuf : ByteArray =  msg.obj as ByteArray
                     // construct a string from the buffer
 //                    val writeMessage : String = String(writeBuf,0,msg.arg1)
-                    Log.d(TAG,"Sent data to remote device");
-                 }
-                 MessageConstants.MESSAGE_READ -> {
-                     val readBuf : ByteArray =  msg.obj as ByteArray
+                    Log.d(TAG, "Sent data to remote device");
+                }
+                MessageConstants.MESSAGE_READ -> {
+                    val readBuf: ByteArray = msg.obj as ByteArray
 //                      construct a string from the valid bytes in the buffer
-                     val readMessage =  String(readBuf, 0, msg.arg1)
-                     findViewById<TextView>(R.id.et_receive).text = readMessage.toString()
-                     Log.d(TAG,"Recevied data from remote device $readMessage");
+                    val readMessage = String(readBuf, 0, msg.arg1)
+                    findViewById<TextView>(R.id.et_receive).text = readMessage.toString()
+                    Log.d(TAG, "Recevied data from remote device $readMessage");
 
-                 }
+                }
 //                case Constants.MESSAGE_DEVICE_NAME:
 //                    // save the connected device's name
 //                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
@@ -613,7 +706,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //                    }
 //                    break;
 //            }
-        }
+            }
         }
     }
 
@@ -626,10 +719,8 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     }
 
 
-
-
-    private fun listenForConnection(){
-        Toast.makeText(this,"Listening for available connections ...", Toast.LENGTH_SHORT).show()
+    private fun listenForConnection() {
+        Toast.makeText(this, "Listening for available connections ...", Toast.LENGTH_SHORT).show()
         bluetoothService?.startListening()
     }
 
@@ -699,6 +790,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
     }
+
     companion object {
         /**
          * Tag string used for logging.
@@ -710,12 +802,16 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         Log.d(TAG, "Item clicked : " + device?.let { deviceToString(it) })
         if (bluetoothService!!.isAlreadyPaired(device)) {
             if (device != null) {
-                bluetoothService!!.connectToDevice(device)
+//                bluetoothService!!.connectToDevice(device)
 //                bluetoothService.sendMessage()
-//                connectToDevice(device)
+                if (checkForBluetoothAndLocationPermission()) {
+                    connectToDevice(device)
+                } else {
+                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
+                }
             }
-            for(uuid in device?.uuids!!){
-                Log.d(TAG,"$uuid")
+            for (uuid in device?.uuids!!) {
+                Log.d(TAG, "$uuid")
             }
 //            Log.d(TAG, "Device already paired!")
 //            Toast.makeText(this, R.string.device_already_paired, Toast.LENGTH_SHORT).show()
@@ -740,8 +836,10 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             }
         }
     }
+
     fun connectToDevice(device: BluetoothDevice) {
-            mGatt = device.connectGatt(this, false, gattCallback)
+        mGatt = device.connectGatt(this, false, gattCallback)
+
     }
 
     private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
@@ -760,6 +858,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             val services = gatt.services
             Log.i("onServicesDiscovered", services.toString())
+//            displayGattServices(services)
             gatt.readCharacteristic(services[1].characteristics[0])
         }
 
@@ -772,63 +871,58 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         }
     }
 
-//    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
-//        if (gattServices == null) return
-//        var uuid: String?
-//        val unknownServiceString: String = resources.getString(R.string.unknown_service)
-//        val unknownCharaString: String = resources.getString(R.string.unknown_characteristic)
-//        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
-//        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
-//            mutableListOf()
+    lateinit var mGattCharacteristics: BluetoothGattCharacteristic
+    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
+        if (gattServices == null) return
+        var uuid: String?
+        val unknownServiceString: String = resources.getString(R.string.unknown_service)
+        val unknownCharaString: String = resources.getString(R.string.unknown_characteristic)
+        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
+        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
+            mutableListOf()
 //        mGattCharacteristics = mutableListOf()
-//
-//        // Loops through available GATT Services.
-//        gattServices.forEach { gattService ->
-//            val currentServiceData = HashMap<String, String>()
-//            uuid = gattService.uuid.toString()
-//            currentServiceData[LIST_NAME] = SampleGattAttributes.lookup(uuid, unknownServiceString)
-//            currentServiceData[LIST_UUID] = uuid
-//            gattServiceData += currentServiceData
-//
-//            val gattCharacteristicGroupData: ArrayList<HashMap<String, String>> = arrayListOf()
-//            val gattCharacteristics = gattService.characteristics
-//            val charas: MutableList<BluetoothGattCharacteristic> = mutableListOf()
-//
-//            // Loops through available Characteristics.
-//            gattCharacteristics.forEach { gattCharacteristic ->
-//                charas += gattCharacteristic
-//                val currentCharaData: HashMap<String, String> = hashMapOf()
-//                uuid = gattCharacteristic.uuid.toString()
-//                currentCharaData[LIST_NAME] = SampleGattAttributes.lookup(uuid, unknownCharaString)
-//                currentCharaData[LIST_UUID] = uuid
-//                gattCharacteristicGroupData += currentCharaData
-//            }
-//            mGattCharacteristics += charas
-//            gattCharacteristicData += gattCharacteristicGroupData
-//        }
-//    }
 
+        // Loops through available GATT Services.
+        gattServices.forEach { gattService ->
+            val currentServiceData = HashMap<String, String>()
+            uuid = gattService.uuid.toString()
+            Log.d("GATT", "Service UUID $uuid")
+//            currentServiceData["NAME"] = SampleGattAttributes.lookup(uuid, unknownServiceString)
+//            currentServiceData["UUID"] = uuid
+            gattServiceData += currentServiceData
+
+            val gattCharacteristicGroupData: ArrayList<HashMap<String, String>> = arrayListOf()
+            val gattCharacteristics = gattService.characteristics
+            val charas: MutableList<BluetoothGattCharacteristic> = mutableListOf()
+
+            // Loops through available Characteristics.
+            gattCharacteristics.forEach { gattCharacteristic ->
+                charas += gattCharacteristic
+                val currentCharaData: HashMap<String, String> = hashMapOf()
+                uuid = gattCharacteristic.uuid.toString()
+//                currentCharaData["NAME"] = SampleGattAttributes.lookup(uuid, unknownCharaString)
+//                currentCharaData["UUID"] = uuid!!
+                gattCharacteristicGroupData += currentCharaData
+            }
+//            mGattCharacteristics += charas
+            gattCharacteristicData += gattCharacteristicGroupData
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateView() {
 
-//        Log.d(TAG, "UUID : " + device.uuids.toString())
-//        for (p in device.uuids) {
-//            Log.d(TAG, "UUID : $p")
-//        }
-        if(bluetoothService?.mmSocket?.isConnected == true
-        ){
+        if (bluetoothService?.mmSocket?.isConnected == true
+        ) {
             recyclerView?.visibility = View.GONE
             controllerLayout?.visibility = View.VISIBLE
             findViewById<Button>(R.id.btn_listen).visibility = View.GONE
             fab?.visibility = View.GONE
-        }
-
-        else{
+        } else {
             findViewById<Button>(R.id.btn_listen).visibility = View.VISIBLE
             fab?.visibility = View.VISIBLE
-            Toast.makeText(this,"Unable to connect to server",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show()
         }
 
     }

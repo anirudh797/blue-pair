@@ -24,6 +24,7 @@
 package co.aurasphere.bluetooth.bluetooth
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.*
 import androidx.core.content.ContextCompat
@@ -285,6 +286,7 @@ class BluetoothController(
      * @return true if a deviceDiscovery is currently running, false otherwise.
      */
     val isDiscovering: Boolean
+        @SuppressLint("MissingPermission")
         get() = bluetooth!!.isDiscovering
 
     /**
@@ -534,7 +536,8 @@ class BluetoothController(
 
          fun manageMyConnectedSocket(mmSocket: BluetoothSocket?) {
             Log.e(TAG, "Connection attempt successfull")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+             isHidDeviceConnected = true
+             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Log.e(TAG, "Connection Type " + mmSocket!!.connectionType)
                 Log.e(TAG, mmSocket.remoteDevice.name)
                 Log.e(TAG, mmSocket.remoteDevice.bondState.toString())
@@ -573,7 +576,7 @@ class BluetoothController(
                 Log.d(TAG,"onServiceConnected profile == BluetoothProfile.HID_DEVICE")
                 val callback: BluetoothHidDevice.Callback = object : BluetoothHidDevice.Callback() {
                     override fun onAppStatusChanged(
-                        pluggedDevice: BluetoothDevice,
+                        pluggedDevice: BluetoothDevice?,
                         registered: Boolean
                     ) {
                         super.onAppStatusChanged(pluggedDevice, registered)

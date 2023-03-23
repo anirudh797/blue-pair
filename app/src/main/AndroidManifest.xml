@@ -3,10 +3,8 @@
     package="co.aurasphere.bluetooth">
 
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30"
         />
     <uses-permission android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30"
         />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -48,21 +46,21 @@
             </intent-filter>
         </activity>
 
-<!--        <service-->
-<!--            android:name=".bluetooth.BluetoothHidService"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="false" />-->
-<!--        <service-->
-<!--            android:name=".bluetooth.BluetoothTileService"-->
-<!--            android:exported="true"-->
-<!--            android:label="Bluetooth Remote"-->
-<!--            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.service.quicksettings.action.QS_TILE" />-->
-<!--            </intent-filter>-->
-<!--        </service>-->
+        <service
+            android:name=".bluetooth.BluetoothHidService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".bluetooth.BluetoothTileService"
+            android:exported="true"
+            android:label="Bluetooth Remote"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
-<!--        <receiver android:name=".bluetooth.NotificationBroadcastReceiver" />-->
+        <receiver android:name=".bluetooth.NotificationBroadcastReceiver" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

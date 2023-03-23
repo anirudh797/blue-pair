@@ -25,6 +25,7 @@ package co.aurasphere.bluetooth
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ProgressDialog
 import android.bluetooth.*
 import android.content.Context
@@ -34,7 +35,6 @@ import android.content.res.Configuration
 import android.os.*
 import android.provider.Settings
 import android.provider.Settings.SettingNotFoundException
-import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -42,6 +42,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.RemoteInput
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -81,15 +83,14 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
      * Progress dialog shown during the pairing process.
      */
     private var bondingProgressDialog: ProgressDialog? = null
-    lateinit var buttons: ArrayList<Button>
+    lateinit var buttons: ArrayList<View>
 
     /**
      * Adapter for the recycler view.
      */
     private var recyclerViewAdapter: DeviceRecyclerViewAdapter? = null
     private var recyclerView: RecyclerViewProgressEmptySupport? = null
-    private var deviceConnectedLayout: RelativeLayout? = null
-    private var controllerLayout: TableLayout? = null
+    private var controllerLayout: ConstraintLayout? = null
     lateinit var txtInput: EditText
     lateinit var mGatt: BluetoothGatt
 
@@ -105,6 +106,21 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     val bluetoothConnectPermission
         get() = checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
 
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    fun requestBlePermissions(activity: Activity?, requestCode: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
+            activity!!,
+            ANDROID_12_BLE_PERMISSIONS,
+            requestCode
+        ) else {
+
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -122,13 +138,11 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
 //        setSupportActionBar(toolbar)
 
+        requestBlePermissions(this,123)
         assignButtonActions()
 
 
-        controllerLayout = findViewById<RelativeLayout>(R.id.controller_view) as TableLayout
-
-        deviceConnectedLayout =
-            findViewById<RelativeLayout>(R.id.layout_connected) as RelativeLayout
+        controllerLayout = findViewById<ConstraintLayout>(R.id.controller_view) as ConstraintLayout
 
 
         // Sets up the RecyclerView.
@@ -141,21 +155,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         val emptyView = findViewById<View>(R.id.empty_list)
         recyclerView!!.setEmptyView(emptyView)
 
-        findViewById<Button>(R.id.btn_send).setOnClickListener {
-            val obj = JSONObject()
-            try {
-                obj.put("type", "KEY")
-                obj.put("keylist", findViewById<EditText>(R.id.et_send).text.toString())
-                obj.put("pressed", true)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            RemoteControlReport.getReport(
-                RemoteControlHelper.Key.BACK[0].toInt(),
-                RemoteControlHelper.Key.BACK[1].toInt()
-            )
-                ?.let { it1 -> bluetoothService?.sendMessage(it1) }
-        }
+
         // Sets the view to show during progress.
         val progressBar = findViewById<View>(R.id.progressBar) as ProgressBar
         recyclerView!!.setProgressView(progressBar)
@@ -185,31 +185,31 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             mHandler
         )
 
-        findViewById<View>(R.id.btn_cancel).setOnClickListener {
-            bluetoothService?.mmSocket?.close()
-            controllerLayout?.visibility = View.GONE
-            recyclerView?.visibility = View.VISIBLE
-        }
+//        findViewById<View>(R.id.btn_cancel).setOnClickListener {
+//            bluetoothService?.mmSocket?.close()
+//            controllerLayout?.visibility = View.GONE
+//            recyclerView?.visibility = View.VISIBLE
+//        }
 
 
-        findViewById<Button>(R.id.btn_listen).setOnClickListener {
-            Log.d(TAG, "Attempt to receive messages ")
-            listenForConnection()
-        }
+//        findViewById<Button>(R.id.btn_listen).setOnClickListener {
+//            Log.d(TAG, "Attempt to receive messages ")
+//            listenForConnection()
+//        }
 
         fab = findViewById<View>(R.id.fab) as FloatingActionButton
         fab!!.setOnClickListener { view ->
             // If the bluetooth is not enabled, turns it on.
             if (!bluetoothService!!.isBluetoothEnabled) {
                 Snackbar.make(view, R.string.enabling_bluetooth, Snackbar.LENGTH_SHORT).show()
-                if (checkForBluetoothAndLocationPermission())
+//                if (checkForBluetoothAndLocationPermission())
                     bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
-                else {
-                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
-                }
+//                else {
+//                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
+//                }
             } else {
                 //Prevents the user from spamming the button and thus glitching the UI.
-                if (checkForBluetoothAndLocationPermission()) {
+//                if (checkForBluetoothAndLocationPermission()) {
                     if (!bluetoothService!!.isDiscovering) {
                         // Starts the discovery.
                         Snackbar.make(
@@ -228,13 +228,11 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                             .show()
                         bluetoothService!!.cancelDiscovery()
                     }
-                } else {
-
                 }
 
             }
         }
-    }
+
 
     fun isLocationEnabled(context: Context): Boolean {
         var locationMode = 0
@@ -380,14 +378,14 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) {
-
-            bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
-            bluetoothService?.startDiscovery()
-
-        } else {
-            checkPermissions()
-        }
+//        if (requestCode == 1) {
+//
+//            bluetoothService!!.turnOnBluetoothAndScheduleDiscovery()
+//            bluetoothService?.startDiscovery()
+//
+//        } else {
+//            checkPermissions()
+//        }
     }
 
     /**
@@ -437,8 +435,8 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
     private fun stopService() {
 //        val serviceIntent = Intent(this, BluetoothHidService::class.java)
-        val serviceIntent = Intent(this, MyService::class.java)
-        stopService(serviceIntent)
+//        val serviceIntent = Intent(this, MyService::class.java)
+//        stopService(serviceIntent)
     }
 
     //    @SuppressLint("MissingPermission")
@@ -468,92 +466,96 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
     @RequiresApi(Build.VERSION_CODES.P)
     private fun assignButtonActions() {
-        val btnPower: Button = findViewById(R.id.btnPower)
-        val btnMenu: Button = findViewById(R.id.btnMenu)
+        val btnPower: View = findViewById(R.id.ntfBtnPower)
+//        val btnMenu: Button = findViewById(R.id.btnMenu)
 //        val btnPair: Button = findViewById(R.id.btnPair)
 //        btnPair.setOnClickListener { v: View? ->
 //            this.pairBtnAction(
 //                v
 //            )
 //        }
-        txtInput = findViewById(R.id.txtInput)
-        val btnLeft: Button = findViewById(R.id.btnLeft)
-        val btnRight: Button = findViewById(R.id.btnRight)
-        val btnUp: Button = findViewById(R.id.btnUp)
-        val btnDown: Button = findViewById(R.id.btnDown)
-        val btnMiddle: Button = findViewById(R.id.btnMiddle)
-        val btnBack: Button = findViewById(R.id.btnBack)
-        val btnHome: Button = findViewById(R.id.btnHome)
-        val btnVolInc: Button = findViewById(R.id.btnVolInc)
-        val btnVolDec: Button = findViewById(R.id.btnVolDec)
-        val btnMute: Button = findViewById(R.id.btnMute)
-        val btnPlayPause: Button = findViewById(R.id.btnPlayPause)
-        val btnRewind: Button = findViewById(R.id.btnRewind)
-        val btnForward: Button = findViewById(R.id.btnForward)
-        val cancelController: Button = findViewById(R.id.btn_cancel_controller)
-        val btnChUp: Button = findViewById(R.id.btnChannelUp)
-        val btnChDown: Button = findViewById(R.id.btnChannelDown)
-        val btnRecord: Button = findViewById(R.id.record)
-//        val btn2 : Button = findViewById(R.id.btn2)
-        val epg: Button = findViewById(R.id.btnEpg)
-        val btnInfo: Button = findViewById(R.id.info)
-        val btnMagenta: Button = findViewById(R.id.btnMagenta)
+//        txtInput = findViewById(R.id.txtInput)
+        val btnLeft: View = findViewById(R.id.ic_chev_left)
+        val btnRight: View = findViewById(R.id.ic_chev_right)
+        val btnUp: View = findViewById(R.id.ic_chev_top)
+        val btnDown: View = findViewById(R.id.ic_chev_down)
+        val btnMiddle: View = findViewById(R.id.ok)
+        val btnBack: View = findViewById(R.id.ntfBtnBack)
+//        val btnHome: Button = findViewById(R.id.btnHome)
+        val btnVolInc: View = findViewById(R.id.vol_plus)
+        val btnVolDec: View = findViewById(R.id.vol_minus)
+        val btnMute: View = findViewById(R.id.mute)
+//        val btnPlayPause: Button = findViewById(R.id.btnPlayPause)
+//        val btnRewind: Button = findViewById(R.id.btnRewind)
+//        val btnForward: Button = findViewById(R.id.btnForward)
+//        val cancelController: Button = findViewById(R.id.btn_cancel_controller)
+        val btnChUp: View = findViewById(R.id.ch_up)
+        val btnChDown: View = findViewById(R.id.ch_down)
+//        val btnRecord: Button = findViewById(R.id.record)
+////        val btn2 : Button = findViewById(R.id.btn2)
+        val epg: View = findViewById(R.id.guideline)
+//        val btnInfo: Button = findViewById(R.id.info)
+//        val btnMagenta: Button = findViewById(R.id.btnMagenta)
 
 
-        cancelController.setOnClickListener {
-            stopService()
-            updateViewForDeviceList()
-        }
+//        cancelController.setOnClickListener {
+//            stopService()
+//            updateViewForDeviceList()
+//        }
 
-        buttons = ArrayList<Button>()
+        buttons = ArrayList<View>()
         buttons.add(btnLeft)
         buttons.add(btnRight)
         buttons.add(btnUp)
         buttons.add(btnDown)
         buttons.add(btnMiddle)
-        buttons.add(btnHome)
+//        buttons.add(btnHome)
         buttons.add(btnBack)
         buttons.add(btnVolDec)
         buttons.add(btnVolInc)
-        buttons.add(btnPlayPause)
+//        buttons.add(btnPlayPause)
         buttons.add(btnPower)
-        buttons.add(btnMenu)
+//        buttons.add(btnMenu)
         buttons.add(btnMute)
-        buttons.add(btnRewind)
-        buttons.add(btnForward)
+//        buttons.add(btnRewind)
+//        buttons.add(btnForward)
         buttons.add(btnChUp)
         buttons.add(btnChDown)
         buttons.apply {
-            add(btnRecord)
-            add(btnInfo)
-            add(epg)
-            add(btnMagenta)
+//            add(btnRecord)
+//            add(btnInfo)
+//            add(epg)
+//            add(btnMagenta)
         }
         //        addKeyBoardListeners(btnSource, 0x91);
         //        buttons.add(btnSource);
+
         setButtonsEnabled(true)
+        buttons.forEach {
+
+        }
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
         addRemoteKeyListeners(epg, RemoteControlHelper.Key.EPG)
-        addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
+//        addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
         addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
         addRemoteKeyListeners(btnRight, RemoteControlHelper.Key.MENU_RIGHT)
         addRemoteKeyListeners(btnUp, RemoteControlHelper.Key.MENU_UP)
         addRemoteKeyListeners(btnDown, RemoteControlHelper.Key.MENU_DOWN)
         addRemoteKeyListeners(btnMiddle, RemoteControlHelper.Key.MENU_PICK)
         addRemoteKeyListeners(btnBack, RemoteControlHelper.Key.BACK)
-        addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
+//        addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
         addRemoteKeyListeners(btnVolInc, RemoteControlHelper.Key.VOLUME_INC)
         addRemoteKeyListeners(btnVolDec, RemoteControlHelper.Key.VOLUME_DEC)
         addRemoteKeyListeners(btnChUp, RemoteControlHelper.Key.CHANNEL_UP)
         addRemoteKeyListeners(btnChDown, RemoteControlHelper.Key.CHANNEL_DOWN)
-        addRemoteKeyListeners(btnInfo, RemoteControlHelper.Key.INFO)
-        addRemoteKeyListeners(btnRecord, RemoteControlHelper.Key.RECORD)
-        addRemoteKeyListeners(btnMagenta, RemoteControlHelper.Key.MAGENTA)
+//        addRemoteKeyListeners(btnInfo, RemoteControlHelper.Key.INFO)
+//        addRemoteKeyListeners(btnRecord, RemoteControlHelper.Key.RECORD)
+//        addRemoteKeyListeners(btnMagenta, RemoteControlHelper.Key.MAGENTA)
         addRemoteKeyListeners(btnMute, RemoteControlHelper.Key.MUTE)
-        addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
-        addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
-        addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
-        txtInput.setOnKeyListener(this::handleInputText)
+//        addRemoteKeyListeners(btnPlayPause, RemoteControlHelper.Key.PLAY_PAUSE)
+//        addRemoteKeyListeners(btnRewind, RemoteControlHelper.Key.MEDIA_REWIND)
+//        addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
+//        txtInput.setOnKeyListener(this::handleInputText)
 
     }
 
@@ -561,7 +563,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     private fun handleInputText(view: View, keyCode: Int, keyEvent: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.action == KeyEvent.ACTION_UP) {
 //            debug("onKey=" + txtInput.getText().toString());
-            txtInput.getText().chars().forEach(IntConsumer { c: Int ->
+            txtInput?.getText().chars().forEach(IntConsumer { c: Int ->
 //                debug((char) c + "");
                 if (KeyboardHelper.keyMap.containsKey(c.toChar())) { // Small case letter
                     bluetoothService?.let {
@@ -612,20 +614,10 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
     @RequiresApi(Build.VERSION_CODES.P)
     @SuppressLint("ClickableViewAccessibility")
-    private fun addRemoteKeyListeners(button: Button, keys: ByteArray) {
+    private fun addRemoteKeyListeners(button: View, keys: ByteArray) {
 
         button.setOnTouchListener { view: View?, motionEvent: MotionEvent ->
-            if (view?.id?.equals(R.id.btnMenu) == true) {
-                bluetoothService?.let {
-                    RemoteControlHelper.sendKeyDown0(0x01, 0xdd, it)
-//                    RemoteControlHelper.sendKeyDown(0x01,0xdd,it)
-                }
-                bluetoothService?.let {
-                    RemoteControlHelper.sendKeyUp(it)
-                }
-                false
-            }
-
+            val now = System.currentTimeMillis()
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                 val sent = bluetoothService?.let {
                     RemoteControlHelper.sendKeyDown(
@@ -635,8 +627,16 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                 }
 //                if (sent) MainActivity.vibrate()
             }
-            if (motionEvent.action == MotionEvent.ACTION_UP) {
+           else if (motionEvent.action == MotionEvent.ACTION_UP) {
                 val sent = bluetoothService?.let { RemoteControlHelper.sendKeyUp(it) }
+                 return@setOnTouchListener true
+            }
+
+            else if (motionEvent.action ==MotionEvent.ACTION_MOVE){
+
+                Log.e(TAG,"Move");
+                return@setOnTouchListener true
+
             }
             false
         }
@@ -687,7 +687,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                     val readBuf: ByteArray = msg.obj as ByteArray
 //                      construct a string from the valid bytes in the buffer
                     val readMessage = String(readBuf, 0, msg.arg1)
-                    findViewById<TextView>(R.id.et_receive).text = readMessage.toString()
+//                    findViewById<TextView>(R.id.et_receive).text = readMessage.toString()
                     Log.d(TAG, "Recevied data from remote device $readMessage");
 
                 }
@@ -802,13 +802,13 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         Log.d(TAG, "Item clicked : " + device?.let { deviceToString(it) })
         if (bluetoothService!!.isAlreadyPaired(device)) {
             if (device != null) {
-//                bluetoothService!!.connectToDevice(device)
+                bluetoothService!!.connectToDevice(device)
 //                bluetoothService.sendMessage()
-                if (checkForBluetoothAndLocationPermission()) {
-                    connectToDevice(device)
-                } else {
-                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
-                }
+//                if (checkForBluetoothAndLocationPermission()) {
+//                    connectToDevice(device)
+//                } else {
+//                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
+//                }
             }
             for (uuid in device?.uuids!!) {
                 Log.d(TAG, "$uuid")
@@ -917,10 +917,10 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         ) {
             recyclerView?.visibility = View.GONE
             controllerLayout?.visibility = View.VISIBLE
-            findViewById<Button>(R.id.btn_listen).visibility = View.GONE
+//            findViewById<Button>(R.id.btn_listen).visibility = View.GONE
             fab?.visibility = View.GONE
         } else {
-            findViewById<Button>(R.id.btn_listen).visibility = View.VISIBLE
+//            findViewById<Button>(R.id.btn_listen).visibility = View.VISIBLE
             fab?.visibility = View.VISIBLE
             Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show()
         }

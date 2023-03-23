@@ -7,7 +7,37 @@
     android:layout_height="match_parent"
     >
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background ="@color/dark_grey"-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto">-->
+
+
+<!--    <View-->
+<!--        android:id="@+id/btnMute"-->
+<!--        android:layout_width="60dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:layout_marginLeft="24dp"-->
+<!--        android:background="@drawable/ic_round"-->
+<!--        android:layout_marginTop="24dp"-->
+<!--        />-->
+
+<!--    <androidx.appcompat.widget.AppCompatImageView-->
+<!--        app:layout_constraintStart_toStartOf="@id/btnMute"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/btnMute"-->
+<!--        app:layout_constraintTop_toTopOf="@id/btnMute"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/btnMute"-->
+<!--        android:layout_width="18dp"-->
+<!--        app:tint="@color/white"-->
+<!--        android:src="@drawable/ic_mute"-->
+<!--        android:layout_height="18dp"/>-->
+<!--    </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+
+    <TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="2dp">
@@ -88,130 +118,147 @@
 
         <TableRow>
 
-            <Button
-                android:id="@+id/btnHome"
-                style="@style/full_button_style"
-                android:text="@string/btn_home" />
+<!--            <Button-->
+<!--                android:id="@+id/btnHome"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_home" />-->
 
-            <Button
-                android:id="@+id/btnDown"
-                style="@style/full_button_style"
-                android:text="@string/btn_down" />
+<!--            <Button-->
+<!--                android:id="@+id/btnDown"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_down" />-->
 
-            <Button
-                android:id="@+id/btnBack"
-                style="@style/full_button_style"
-                android:text="@string/btn_back" />
+<!--            <Button-->
+<!--                android:id="@+id/btnBack"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_back" />-->
 
-        </TableRow>
+<!--        </TableRow>-->
 
-        <TableRow>
+<!--        <TableRow>-->
 
-            <Button
-                android:id="@+id/btnRewind"
-                style="@style/full_button_style"
-                android:text="@string/btn_rewind" />
+<!--            <Button-->
+<!--                android:id="@+id/btnRewind"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_rewind" />-->
 
-            <Button
-                android:id="@+id/btnForward"
-                style="@style/full_button_style"
-                android:text="@string/btn_forward" />
+<!--            <Button-->
+<!--                android:id="@+id/btnForward"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_forward" />-->
 
-            <Button
-                android:id="@+id/btnPlayPause"
-                style="@style/full_button_style"
-                android:text="@string/btn_play_pause" />
+<!--            <Button-->
+<!--                android:id="@+id/btnPlayPause"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_play_pause" />-->
 
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
 
-                <Button
-                    android:id="@+id/btnVolInc"
-                    style="@style/half_button_style"
-                    android:text="@string/btn_vol_up" />
+<!--                <Button-->
+<!--                    android:id="@+id/btnVolInc"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/btn_vol_up" />-->
 
-                <Button
-                    android:id="@+id/btnVolDec"
-                    style="@style/half_button_style"
-                    android:text="@string/btn_vol_down" />
+<!--                <Button-->
+<!--                    android:id="@+id/btnVolDec"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/btn_vol_down" />-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
-        </TableRow>
-        <TableRow>
+<!--        </TableRow>-->
+<!--        <TableRow>-->
 
-            <Button
-                android:id="@+id/btn1"
-                style="@style/full_button_style"
-                android:text="@string/btn_1" />
+<!--            <Button-->
+<!--                android:id="@+id/btn1"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_1" />-->
 
-            <Button
-                android:id="@+id/btn2"
-                style="@style/full_button_style"
-                android:text="@string/btn_2" />
+<!--            <Button-->
+<!--                android:id="@+id/btn2"-->
+<!--                style="@style/full_button_style"-->
+<!--                android:text="@string/btn_2" />-->
 
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
 
-                <Button
-                    android:id="@+id/info"
-                    style="@style/half_button_style"
-                    android:text="@string/btn_info"/>
+<!--                <Button-->
+<!--                    android:id="@+id/info"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/btn_info"/>-->
 
-                <Button
-                    android:id="@+id/magenta"
-                    android:textSize="15sp"
-                    android:maxLines="1"
-                    style="@style/half_button_style"
-                    android:text="@string/magenta" />
+<!--                <Button-->
+<!--                    android:id="@+id/magenta"-->
+<!--                    android:textSize="15sp"-->
+<!--                    android:maxLines="1"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/magenta" />-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
 
-                <Button
-                    android:id="@+id/btnChannelUp"
-                    style="@style/half_button_style"
-                    android:text="@string/ch_up"/>
+<!--                <Button-->
+<!--                    android:id="@+id/btnChannelUp"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/ch_up"/>-->
 
-                <Button
-                    android:id="@+id/btnChannelDown"
-                    style="@style/half_button_style"
-                    android:text="@string/ch_down" />
+<!--                <Button-->
+<!--                    android:id="@+id/btnChannelDown"-->
+<!--                    style="@style/half_button_style"-->
+<!--                    android:text="@string/ch_down" />-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
-        </TableRow>
+<!--        </TableRow>-->
 
 
 
-        <TableRow>
+<!--        <TableRow>-->
 
-            <EditText
-                android:id="@+id/txtInput"
-                android:layout_span="2"
-                android:layout_weight="1"
-                android:hint="Type text here to send."
-                android:inputType="text" />
+<!--            <EditText-->
+<!--                android:id="@+id/txtInput"-->
+<!--                android:layout_span="2"-->
+<!--                android:layout_weight="1"-->
+<!--                android:hint="Type text here to send."-->
+<!--                android:inputType="text" />-->
 
-        </TableRow>
+<!--        </TableRow>-->
 
-        <TableRow>
+<!--        <TableRow>-->
 
-            <TextView
-                android:id="@+id/txtOut"
-                android:layout_width="match_parent"
-                android:layout_margin="2dp"
-                android:layout_span="4"
-                android:layout_weight="1" />
-        </TableRow>
+<!--            <TextView-->
+<!--                android:id="@+id/txtOut"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_margin="2dp"-->
+<!--                android:layout_span="4"-->
+<!--                android:layout_weight="1" />-->
+<!--        </TableRow>-->
+
+
+<!--    </TableLayout>-->
+
+<!--  </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+          </TableRow>
+
+<!--        <TableRow>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/txtOut"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_margin="2dp"-->
+<!--                android:layout_span="4"-->
+<!--                android:layout_weight="1" />-->
+<!--        </TableRow>-->
 
 
     </TableLayout>

@@ -376,9 +376,9 @@ class DPadView(context: Context, attrs: AttributeSet) : AppCompatImageView(conte
             val isTouched = event.isTouched
 
             if (isInCenterCircle) {
-                if (event != null) {
-                    detector.onTouchEvent(event)
-                }
+                kotlin.run {
+                detector.onTouchEvent(event)
+                } ?: return false
                 centerCircleTouched = true
             } else {
                 var deg = Math.toDegrees(atan2(event.y - width / 2, event.x - width / 2).toDouble())

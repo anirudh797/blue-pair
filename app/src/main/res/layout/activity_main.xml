@@ -109,6 +109,7 @@
             android:id="@+id/mute"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="24dp"
@@ -116,7 +117,7 @@
             android:layout_marginTop="24dp"
              />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatImageView
             app:layout_constraintStart_toStartOf="@id/mute"
             app:layout_constraintEnd_toEndOf="@id/mute"
             app:layout_constraintTop_toTopOf="@id/mute"
@@ -149,30 +150,27 @@
             android:layout_height="24dp"/>
 
 
-<!--        <View-->
-<!--            android:id="@+id/ntfBtnBack"-->
-<!--            android:layout_width="60dp"-->
-<!--            android:layout_height="60dp"-->
-<!--            android:clickable="true"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            android:layout_marginStart="24dp"-->
-<!--            android:background="@drawable/ic_round"-->
-<!--            android:layout_marginTop="24dp"-->
-<!--            android:focusable="true" />-->
-
-        <androidx.appcompat.widget.AppCompatButton
+        <View
             android:id="@+id/ntfBtnBack"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/ic_round_background_focused"
-            android:src="@drawable/ic_left_arrow"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:clickable = "true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/ic_round"
+            android:layout_marginTop="24dp"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_left_arrow"
+            app:layout_constraintBottom_toBottomOf="@id/ntfBtnBack"
+            app:layout_constraintStart_toStartOf="@id/ntfBtnBack"
+            app:layout_constraintTop_toTopOf="@id/ntfBtnBack"
+            app:layout_constraintEnd_toEndOf="@id/ntfBtnBack"
              />
 
 
@@ -211,7 +209,7 @@
             app:layout_constraintTop_toTopOf="@id/guideline"
             app:layout_constraintBottom_toBottomOf="@id/ntfBtnBack"
             android:background="@drawable/ic_round"
-            android:focusable="true" />
+            android:clickable="true" />
 
         <androidx.appcompat.widget.AppCompatImageView
             app:layout_constraintStart_toStartOf="@id/home"
@@ -237,21 +235,54 @@
             tools:visibility="visible"
             android:focusable="true" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/vol_tv"
+            app:layout_constraintStart_toStartOf="@id/vol"
+            app:layout_constraintEnd_toEndOf="@id/vol"
+            app:layout_constraintTop_toTopOf="@id/vol"
+            app:layout_constraintBottom_toBottomOf="@id/vol"
+            android:layout_width="wrap_content"
+            android:text ="VOL"
+            android:textSize ="18sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_height="24dp"/>
+
+
+        <View
             android:id="@+id/vol_plus"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="@id/vol"
+            app:layout_constraintEnd_toEndOf="@id/vol"
+            app:layout_constraintTop_toTopOf="@id/vol"
+            app:layout_constraintBottom_toTopOf="@id/vol_tv"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/vol_plus_iv"
             app:layout_constraintStart_toStartOf="@id/vol"
             app:layout_constraintEnd_toEndOf="@id/vol"
             app:layout_constraintTop_toTopOf="@id/vol"
             android:layout_width="20dp"
             android:layout_marginTop="20dp"
-            app:tint="@color/white"
-            android:background="@drawable/ic_round_background_focused"
             android:src="@drawable/ic_plus"
             android:layout_height="20dp"/>
 
 
-        <androidx.appcompat.widget.AppCompatButton
+        <View
             android:id="@+id/vol_minus"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="@id/vol"
+            app:layout_constraintEnd_toEndOf="@id/vol"
+            app:layout_constraintTop_toBottomOf="@id/vol_tv"
+            app:layout_constraintBottom_toBottomOf="@id/vol"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
             android:background="@drawable/ic_minus"
             app:layout_constraintStart_toStartOf="@id/vol"
             app:layout_constraintEnd_toEndOf="@id/vol"
@@ -276,8 +307,18 @@
             tools:visibility="visible"
             android:focusable="true" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <View
             android:id="@+id/ch_up"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="@id/channel"
+            app:layout_constraintEnd_toEndOf="@id/channel"
+            app:layout_constraintTop_toTopOf="@id/channel"
+            app:layout_constraintBottom_toTopOf="@id/ch_tv"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
             android:background="@drawable/ic_up_arrow"
             app:layout_constraintEnd_toEndOf="@id/channel"
             app:layout_constraintStart_toStartOf="@id/channel"
@@ -288,9 +329,32 @@
             android:src="@drawable/ic_up_arrow"
             android:layout_height="20dp"/>
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/ch_tv"
+            app:layout_constraintStart_toStartOf="@id/channel"
+            app:layout_constraintEnd_toEndOf="@id/channel"
+            app:layout_constraintTop_toTopOf="@id/channel"
+            app:layout_constraintBottom_toBottomOf="@id/channel"
+            android:layout_width="wrap_content"
+            android:text ="CH"
+            android:textSize ="18sp"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_height="24dp"/>
+
+
+        <View
+            android:id="@+id/ch_down"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="@id/channel"
+            app:layout_constraintEnd_toEndOf="@id/channel"
+            app:layout_constraintTop_toBottomOf="@id/ch_tv"
+            app:layout_constraintBottom_toBottomOf="@id/channel"
+            />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/ch_down"
             android:background="@drawable/ic_down_arrow"
             app:layout_constraintStart_toStartOf="@id/channel"
             app:layout_constraintEnd_toEndOf="@id/channel"

@@ -43,6 +43,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.RemoteInput
@@ -482,8 +483,9 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        val btnUp: View = findViewById(R.id.ic_chev_top)
 //        val btnDown: View = findViewById(R.id.ic_chev_down)
         val btnBack: View = findViewById(R.id.ntfBtnBack)
+
         val circularDpadUp : View = findViewById(R.id.dpad_custom)
-//        val btnHome: Button = findViewById(R.id.btnHome)
+        val btnHome: View = findViewById(R.id.home)
         val btnVolInc: View = findViewById(R.id.vol_plus)
         val btnVolDec: View = findViewById(R.id.vol_minus)
         val btnMute: View = findViewById(R.id.mute)
@@ -511,7 +513,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        buttons.add(btnUp)
         buttons.add(circularDpadUp)
 //        buttons.add(btnDown)
-//        buttons.add(btnHome)
+        buttons.add(btnHome)
         buttons.add(btnBack)
         buttons.add(btnVolDec)
         buttons.add(btnVolInc)
@@ -544,7 +546,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        addRemoteKeyListeners(btnUp, RemoteControlHelper.Key.MENU_UP)
 //        addRemoteKeyListeners(btnDown, RemoteControlHelper.Key.MENU_DOWN)
         addRemoteKeyListeners(btnBack, RemoteControlHelper.Key.BACK)
-//        addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
+        addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
         addRemoteKeyListeners(btnVolInc, RemoteControlHelper.Key.VOLUME_INC)
         addRemoteKeyListeners(btnVolDec, RemoteControlHelper.Key.VOLUME_DEC)
         addRemoteKeyListeners(btnChUp, RemoteControlHelper.Key.CHANNEL_UP)
@@ -568,7 +570,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
             isHapticFeedbackEnabled = true
             normalColor = getColor(R.color.grey)
-            pressedColor = getColor(R.color.white)
+            pressedColor = getColor(R.color.white_75_opaque)
             padding = 20f
             directionSectionAngle = 90f
 
@@ -576,7 +578,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             isCenterCirclePressEnabled = true
 
             centerCircleNormalColor = getColor(R.color.dark_grey)
-            centerCirclePressedColor = getColor(R.color.white)
+            centerCirclePressedColor = getColor(R.color.white_75_opaque)
 
             centerCircleRatio = 5f
             centerIcon = null
@@ -713,11 +715,19 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                         keys[1].toInt(), it
                     )
                 }
+                button.background = AppCompatResources.getDrawable(this@MainActivity,R.drawable.ic_round_white)
                 if (sent == true) vibrate()
             }
            else if (motionEvent.action == MotionEvent.ACTION_UP) {
                 val sent = bluetoothService?.let { RemoteControlHelper.sendKeyUp(it) }
-                 return@setOnTouchListener true
+                if (button.id == R.id.ntfBtnPower) {
+                    button.background =
+                        AppCompatResources.getDrawable(this@MainActivity, R.drawable.ic_round_red)
+                } else {
+                    button.background =
+                        AppCompatResources.getDrawable(this@MainActivity, R.drawable.ic_round)
+                }
+                    return@setOnTouchListener true
             }
 
             else if (motionEvent.action ==MotionEvent.ACTION_MOVE){

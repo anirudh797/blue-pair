@@ -46,10 +46,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.RemoteInput
+import androidx.core.content.res.ResourcesCompat.getFloat
 import androidx.recyclerview.widget.LinearLayoutManager
 import co.aurasphere.bluetooth.bluetooth.*
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.getDeviceName
+import co.aurasphere.bluetooth.view.DPadView
 import co.aurasphere.bluetooth.view.DeviceRecyclerViewAdapter
 import co.aurasphere.bluetooth.view.ListInteractionListener
 import co.aurasphere.bluetooth.view.RecyclerViewProgressEmptySupport
@@ -62,7 +64,6 @@ import java.util.function.IntConsumer
 /**
  * Main Activity of this application.
  *
- * @author Donato Rimenti
  */
 class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevice?> {
     /**
@@ -404,16 +405,16 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     }
 
     fun vibrate() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
-//        } else {
-//            vibrator.vibrate(
-//                VibrationEffect.createOneShot(
-//                    25,
-//                    VibrationEffect.DEFAULT_AMPLITUDE
-//                )
-//            )
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+        } else {
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(
+                    25,
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
+        }
     }
 
 
@@ -466,6 +467,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
     @RequiresApi(Build.VERSION_CODES.P)
     private fun assignButtonActions() {
+        setupCustomDpadActions()
         val btnPower: View = findViewById(R.id.ntfBtnPower)
 //        val btnMenu: Button = findViewById(R.id.btnMenu)
 //        val btnPair: Button = findViewById(R.id.btnPair)
@@ -475,12 +477,12 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //            )
 //        }
 //        txtInput = findViewById(R.id.txtInput)
-        val btnLeft: View = findViewById(R.id.ic_chev_left)
-        val btnRight: View = findViewById(R.id.ic_chev_right)
-        val btnUp: View = findViewById(R.id.ic_chev_top)
-        val btnDown: View = findViewById(R.id.ic_chev_down)
-        val btnMiddle: View = findViewById(R.id.ok)
+//        val btnLeft: View = findViewById(R.id.ic_chev_left)
+//        val btnRight: View = findViewById(R.id.ic_chev_right)
+//        val btnUp: View = findViewById(R.id.ic_chev_top)
+//        val btnDown: View = findViewById(R.id.ic_chev_down)
         val btnBack: View = findViewById(R.id.ntfBtnBack)
+        val circularDpadUp : View = findViewById(R.id.dpad_custom)
 //        val btnHome: Button = findViewById(R.id.btnHome)
         val btnVolInc: View = findViewById(R.id.vol_plus)
         val btnVolDec: View = findViewById(R.id.vol_minus)
@@ -504,11 +506,11 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        }
 
         buttons = ArrayList<View>()
-        buttons.add(btnLeft)
-        buttons.add(btnRight)
-        buttons.add(btnUp)
-        buttons.add(btnDown)
-        buttons.add(btnMiddle)
+//        buttons.add(btnLeft)
+//        buttons.add(btnRight)
+//        buttons.add(btnUp)
+        buttons.add(circularDpadUp)
+//        buttons.add(btnDown)
 //        buttons.add(btnHome)
         buttons.add(btnBack)
         buttons.add(btnVolDec)
@@ -537,11 +539,10 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
         addRemoteKeyListeners(epg, RemoteControlHelper.Key.EPG)
 //        addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)
-        addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
-        addRemoteKeyListeners(btnRight, RemoteControlHelper.Key.MENU_RIGHT)
-        addRemoteKeyListeners(btnUp, RemoteControlHelper.Key.MENU_UP)
-        addRemoteKeyListeners(btnDown, RemoteControlHelper.Key.MENU_DOWN)
-        addRemoteKeyListeners(btnMiddle, RemoteControlHelper.Key.MENU_PICK)
+//        addRemoteKeyListeners(btnLeft, RemoteControlHelper.Key.MENU_LEFT)
+//        addRemoteKeyListeners(btnRight, RemoteControlHelper.Key.MENU_RIGHT)
+//        addRemoteKeyListeners(btnUp, RemoteControlHelper.Key.MENU_UP)
+//        addRemoteKeyListeners(btnDown, RemoteControlHelper.Key.MENU_DOWN)
         addRemoteKeyListeners(btnBack, RemoteControlHelper.Key.BACK)
 //        addRemoteKeyListeners(btnHome, RemoteControlHelper.Key.HOME)
         addRemoteKeyListeners(btnVolInc, RemoteControlHelper.Key.VOLUME_INC)
@@ -557,6 +558,93 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        addRemoteKeyListeners(btnForward, RemoteControlHelper.Key.MEDIA_FAST_FORWARD)
 //        txtInput.setOnKeyListener(this::handleInputText)
 
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun setupCustomDpadActions() {
+
+        val dpad = findViewById<DPadView>(R.id.dpad_custom)
+        dpad.modify {
+
+            isHapticFeedbackEnabled = true
+            normalColor = getColor(R.color.grey)
+            pressedColor = getColor(R.color.white)
+            padding = 20f
+            directionSectionAngle = 90f
+
+            isCenterCircleEnabled = true
+            isCenterCirclePressEnabled = true
+
+            centerCircleNormalColor = getColor(R.color.dark_grey)
+            centerCirclePressedColor = getColor(R.color.white)
+
+            centerCircleRatio = 5f
+            centerIcon = null
+
+            centerText = "OK"
+
+            centerIconTint = 0
+
+            centerTextSize = 36f
+
+            var style = 0
+            style = style or DPadView.TextStyle.BOLD.style
+
+
+            centerTextStyle = style
+
+            centerTextColor = getColor(R.color.white)
+        }
+
+
+        dpad.onDirectionPressListener = { direction, action ->
+
+            when (direction) {
+
+                DPadView.Direction.UP -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_UP)
+                DPadView.Direction.DOWN -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_DOWN)
+                DPadView.Direction.LEFT -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_LEFT)
+                DPadView.Direction.RIGHT -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_RIGHT)
+
+            }
+            val text = StringBuilder()
+            val directionText = direction?.name ?: ""
+            if (directionText.isNotEmpty()) {
+                text.append("Direction:\t")
+            }
+            text.append(directionText)
+            if (directionText.isNotEmpty()) {
+                text.append("\nAction:\t")
+                val actionText = when (action) {
+                    MotionEvent.ACTION_DOWN -> "Down"
+                    MotionEvent.ACTION_UP -> "Up"
+                    MotionEvent.ACTION_MOVE -> "Move"
+                    else -> action.toString()
+                }
+                text.append(actionText)
+            }
+            findViewById<TextView>(R.id.tv_sample).text = text;
+
+            dpad.onDirectionClickListener = {
+                it?.let {
+                    Log.i("directionPress", it.name)
+                    when (it) {
+//                    DPadView.Direction.UP -> addRemoteKeyListenersForDpad()
+
+                    }
+                }
+//                dpad.reInit()
+            }
+
+            dpad.setOnClickListener {
+                Log.i("Click", "Done")
+                addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
+            }
+
+            dpad.onCenterLongClick = {
+                addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -625,7 +713,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                         keys[1].toInt(), it
                     )
                 }
-//                if (sent) MainActivity.vibrate()
+                if (sent == true) vibrate()
             }
            else if (motionEvent.action == MotionEvent.ACTION_UP) {
                 val sent = bluetoothService?.let { RemoteControlHelper.sendKeyUp(it) }
@@ -642,6 +730,29 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun addRemoteKeyListenersForDpad(action: Int, keys: ByteArray) {
+
+            if (action == MotionEvent.ACTION_DOWN) {
+                val sent = bluetoothService?.let {
+                    RemoteControlHelper.sendKeyDown(
+                        keys[0].toInt(),
+                        keys[1].toInt(), it
+                    )
+                }
+//                if (sent) MainActivity.vibrate()
+            }
+            else if (action == MotionEvent.ACTION_UP) {
+                val sent = bluetoothService?.let { RemoteControlHelper.sendKeyUp(it) }
+            }
+
+            else if (action ==MotionEvent.ACTION_MOVE){
+
+                Log.e(TAG,"Move");
+
+            }
+    }
 
     /**
      * The Handler that gets information back from the BluetoothChatService
@@ -774,6 +885,8 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         if (recyclerViewAdapter != null) {
             recyclerViewAdapter!!.cleanView()
         }
+        updateViewForDeviceList()
+
     }
 
     /**
@@ -802,6 +915,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         Log.d(TAG, "Item clicked : " + device?.let { deviceToString(it) })
         if (bluetoothService!!.isAlreadyPaired(device)) {
             if (device != null) {
+                bluetoothService!!.cancelDiscovery()
                 bluetoothService!!.connectToDevice(device)
 //                bluetoothService.sendMessage()
 //                if (checkForBluetoothAndLocationPermission()) {
@@ -871,44 +985,6 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         }
     }
 
-    lateinit var mGattCharacteristics: BluetoothGattCharacteristic
-    private fun displayGattServices(gattServices: List<BluetoothGattService>?) {
-        if (gattServices == null) return
-        var uuid: String?
-        val unknownServiceString: String = resources.getString(R.string.unknown_service)
-        val unknownCharaString: String = resources.getString(R.string.unknown_characteristic)
-        val gattServiceData: MutableList<HashMap<String, String>> = mutableListOf()
-        val gattCharacteristicData: MutableList<ArrayList<HashMap<String, String>>> =
-            mutableListOf()
-//        mGattCharacteristics = mutableListOf()
-
-        // Loops through available GATT Services.
-        gattServices.forEach { gattService ->
-            val currentServiceData = HashMap<String, String>()
-            uuid = gattService.uuid.toString()
-            Log.d("GATT", "Service UUID $uuid")
-//            currentServiceData["NAME"] = SampleGattAttributes.lookup(uuid, unknownServiceString)
-//            currentServiceData["UUID"] = uuid
-            gattServiceData += currentServiceData
-
-            val gattCharacteristicGroupData: ArrayList<HashMap<String, String>> = arrayListOf()
-            val gattCharacteristics = gattService.characteristics
-            val charas: MutableList<BluetoothGattCharacteristic> = mutableListOf()
-
-            // Loops through available Characteristics.
-            gattCharacteristics.forEach { gattCharacteristic ->
-                charas += gattCharacteristic
-                val currentCharaData: HashMap<String, String> = hashMapOf()
-                uuid = gattCharacteristic.uuid.toString()
-//                currentCharaData["NAME"] = SampleGattAttributes.lookup(uuid, unknownCharaString)
-//                currentCharaData["UUID"] = uuid!!
-                gattCharacteristicGroupData += currentCharaData
-            }
-//            mGattCharacteristics += charas
-            gattCharacteristicData += gattCharacteristicGroupData
-        }
-    }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateView() {
@@ -921,7 +997,9 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             fab?.visibility = View.GONE
         } else {
 //            findViewById<Button>(R.id.btn_listen).visibility = View.VISIBLE
+            recyclerView?.visibility = View.VISIBLE
             fab?.visibility = View.VISIBLE
+            controllerLayout?.visibility = View.GONE
             Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show()
         }
 

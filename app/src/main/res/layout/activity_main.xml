@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
+    android:background="@color/grey"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -19,26 +20,108 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/guideline"
+            >
+
+            <co.aurasphere.bluetooth.view.DPadView
+                android:id="@+id/dpad_custom"
+                android:layout_width="256dp"
+                android:layout_height="256dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:minWidth="256dp"
+                android:minHeight="256dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_custon_dpad_background"
+                app:directionSectionAngle="25" />
+
+
+            <Button
+                android:id="@+id/ic_chev_top"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:enabled="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@drawable/ic_chevron_up"
+                android:layout_marginTop="24dp"
+                app:layout_constraintEnd_toEndOf="@id/dpad_custom"
+                app:layout_constraintStart_toStartOf="@id/dpad_custom"
+                app:layout_constraintTop_toTopOf="@id/dpad_custom"
+                app:tint="@color/white" />
+
+
+            <Button
+                android:id="@+id/ic_chev_down"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:enabled="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@drawable/ic_chevron_down"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintEnd_toEndOf="@id/dpad_custom"
+                app:layout_constraintStart_toStartOf="@id/dpad_custom"
+                app:layout_constraintBottom_toBottomOf="@id/dpad_custom"
+                app:tint="@color/white" />
+
+            <Button
+                android:id="@+id/ic_chev_left"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:enabled="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@drawable/ic_chevron_left"
+                android:layout_marginStart="24dp"
+                app:layout_constraintTop_toTopOf="@id/dpad_custom"
+                app:layout_constraintStart_toStartOf="@id/dpad_custom"
+                app:layout_constraintBottom_toBottomOf="@id/dpad_custom"
+                app:tint="@color/white" />
+
+            <Button
+                android:id="@+id/ic_chev_right"
+                android:layout_width="20dp"
+                android:enabled="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:layout_height="20dp"
+                android:background="@drawable/ic_chevron_right"
+                android:layout_marginEnd="24dp"
+                app:layout_constraintTop_toTopOf="@id/dpad_custom"
+                app:layout_constraintEnd_toEndOf="@id/dpad_custom"
+                app:layout_constraintBottom_toBottomOf="@id/dpad_custom"
+                app:tint="@color/white" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
         <View
             android:id="@+id/mute"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="24dp"
             android:background="@drawable/ic_round"
             android:layout_marginTop="24dp"
-            android:focusable="true" />
+             />
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <Button
             app:layout_constraintStart_toStartOf="@id/mute"
             app:layout_constraintEnd_toEndOf="@id/mute"
             app:layout_constraintTop_toTopOf="@id/mute"
             app:layout_constraintBottom_toBottomOf="@id/mute"
             android:layout_width="18dp"
-            android:clickable ="false"
-            app:tint="@color/white"
             android:src="@drawable/ic_mute"
             android:layout_height="18dp"/>
 
@@ -66,28 +149,31 @@
             android:layout_height="24dp"/>
 
 
-        <View
+<!--        <View-->
+<!--            android:id="@+id/ntfBtnBack"-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:clickable="true"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            android:layout_marginStart="24dp"-->
+<!--            android:background="@drawable/ic_round"-->
+<!--            android:layout_marginTop="24dp"-->
+<!--            android:focusable="true" />-->
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/ntfBtnBack"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:clickable="true"
+            android:background="@drawable/ic_round_background_focused"
+            android:src="@drawable/ic_left_arrow"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="24dp"
-            android:background="@drawable/ic_round"
-            android:layout_marginTop="24dp"
-            android:focusable="true" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            app:layout_constraintStart_toStartOf="@id/ntfBtnBack"
-            app:layout_constraintEnd_toEndOf="@id/ntfBtnBack"
-            app:layout_constraintTop_toTopOf="@id/ntfBtnBack"
-            app:layout_constraintBottom_toBottomOf="@id/ntfBtnBack"
-            android:layout_width="24dp"
-            app:tint="@color/white"
-            android:src="@drawable/ic_left_arrow"
-            android:layout_height="24dp"/>
+             />
 
 
         <View
@@ -95,7 +181,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:clickable="true"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -120,12 +206,11 @@
             android:id="@+id/home"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:clickable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="@id/guideline"
+            app:layout_constraintBottom_toBottomOf="@id/ntfBtnBack"
             android:background="@drawable/ic_round"
-            android:layout_marginBottom="30dp"
             android:focusable="true" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -154,13 +239,13 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/vol_plus"
-            android:background="@drawable/ic_plus"
             app:layout_constraintStart_toStartOf="@id/vol"
             app:layout_constraintEnd_toEndOf="@id/vol"
             app:layout_constraintTop_toTopOf="@id/vol"
             android:layout_width="20dp"
             android:layout_marginTop="20dp"
             app:tint="@color/white"
+            android:background="@drawable/ic_round_background_focused"
             android:src="@drawable/ic_plus"
             android:layout_height="20dp"/>
 
@@ -216,314 +301,87 @@
             android:src="@drawable/ic_down_arrow"
             android:layout_height="20dp"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/dpad"
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/dpad"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/ntfBtnBack"-->
+<!--            android:layout_width="256dp"-->
+<!--            android:layout_marginTop="24dp"-->
+<!--            android:background="@drawable/ic_round"-->
+<!--            android:layout_height="256dp">-->
+
+<!--            <androidx.appcompat.widget.AppCompatTextView-->
+<!--                android:id="@+id/ok"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:text="OK"-->
+<!--                android:layout_margin="50dp"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:gravity="center"-->
+<!--                android:background="@drawable/ic_dpad_oval"-->
+<!--                app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                app:layout_constraintRight_toRightOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                />-->
+
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/ic_chev_left"-->
+<!--                android:background="@drawable/ic_chevron_left"-->
+<!--                app:layout_constraintStart_toStartOf="@id/dpad"-->
+<!--                app:layout_constraintEnd_toStartOf="@id/ok"-->
+<!--                app:layout_constraintTop_toTopOf="@id/dpad"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/dpad"-->
+<!--                android:layout_width="20dp"-->
+<!--                android:layout_height="20dp"/>-->
+
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/ic_chev_right"-->
+<!--                android:background="@drawable/ic_chevron_right"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/dpad"-->
+<!--                app:layout_constraintStart_toEndOf="@id/ok"-->
+<!--                app:layout_constraintTop_toTopOf="@id/dpad"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/dpad"-->
+<!--                android:layout_width="20dp"-->
+<!--                android:layout_height="20dp"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/ic_chev_top"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/dpad"-->
+<!--                app:layout_constraintStart_toStartOf="@id/dpad"-->
+<!--                app:layout_constraintTop_toTopOf="@id/dpad"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/ok"-->
+<!--                android:layout_width="20dp"-->
+<!--                app:tint="@color/white"-->
+<!--                android:background="@drawable/ic_chevron_up"-->
+<!--                android:layout_height="20dp"/>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/ic_chev_down"-->
+<!--                android:background="@drawable/ic_chevron_down"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/dpad"-->
+<!--                app:layout_constraintStart_toStartOf="@id/dpad"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/ok"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/dpad"-->
+<!--                android:layout_width="20dp"-->
+<!--                app:tint="@color/white"-->
+<!--                android:layout_height="20dp"/>-->
+
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_sample"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ntfBtnBack"
-            android:layout_width="256dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/ic_round"
-            android:layout_height="256dp">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/ok"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:text="OK"
-                android:layout_margin="50dp"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:background="@drawable/ic_dpad_oval"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/ic_chev_left"
-                android:background="@drawable/ic_chevron_left"
-                app:layout_constraintStart_toStartOf="@id/dpad"
-                app:layout_constraintEnd_toStartOf="@id/ok"
-                app:layout_constraintTop_toTopOf="@id/dpad"
-                app:layout_constraintBottom_toBottomOf="@id/dpad"
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/ic_chev_right"
-                android:background="@drawable/ic_chevron_right"
-                app:layout_constraintEnd_toEndOf="@id/dpad"
-                app:layout_constraintStart_toEndOf="@id/ok"
-                app:layout_constraintTop_toTopOf="@id/dpad"
-                app:layout_constraintBottom_toBottomOf="@id/dpad"
-                android:layout_width="20dp"
-                android:layout_height="20dp"/>
-
-            <Button
-                android:id="@+id/ic_chev_top"
-                app:layout_constraintEnd_toEndOf="@id/dpad"
-                app:layout_constraintStart_toStartOf="@id/dpad"
-                app:layout_constraintTop_toTopOf="@id/dpad"
-                app:layout_constraintBottom_toTopOf="@id/ok"
-                android:layout_width="20dp"
-                app:tint="@color/white"
-                android:background="@drawable/ic_chevron_up"
-                android:layout_height="20dp"/>
-
-            <Button
-                android:id="@+id/ic_chev_down"
-                android:background="@drawable/ic_chevron_down"
-                app:layout_constraintEnd_toEndOf="@id/dpad"
-                app:layout_constraintStart_toStartOf="@id/dpad"
-                app:layout_constraintTop_toBottomOf="@id/ok"
-                app:layout_constraintBottom_toBottomOf="@id/dpad"
-                android:layout_width="20dp"
-                app:tint="@color/white"
-                android:layout_height="20dp"/>
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:layout_width="20dp"
+            android:layout_height="20dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-
-<!--    <TableLayout-->
-<!--        android:layout_marginVertical="20dp"-->
-<!--        android:id="@+id/controller_view"-->
-<!--        android:visibility="gone"-->
-<!--        android:layout_gravity="center_vertical"-->
-<!--        tools:visibility="visible"-->
-<!--        xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="2dp">-->
-
-<!--        <TableRow>-->
-
-<!--            <Spinner-->
-<!--                android:id="@+id/cmbBondedDevices"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center_vertical"-->
-<!--                android:layout_span="2"-->
-<!--                android:layout_weight="1" />-->
-
-<!--&lt;!&ndash;            <com.google.android.material.switchmaterial.SwitchMaterial&ndash;&gt;-->
-<!--&lt;!&ndash;                android:id="@+id/swtConnect"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_gravity="end"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_span="2"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_weight="1"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:text="Connect" />&ndash;&gt;-->
-
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnPower"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_power" />-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnEpg"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/EPG"-->
-<!--                    android:visibility="visible" />-->
-
-<!--            </LinearLayout>-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnUp"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_up" />-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnMenu"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_opt" />-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnMute"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_mute" />-->
-
-<!--            </LinearLayout>-->
-
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnLeft"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_left" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnMiddle"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_middle" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnRight"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_right" />-->
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnHome"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_home" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnDown"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_down" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnBack"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_back" />-->
-
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnRewind"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_rewind" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnForward"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_forward" />-->
-
-<!--            <Button-->
-<!--                android:id="@+id/btnPlayPause"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:text="@string/btn_play_pause" />-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnVolInc"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_vol_up" />-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnVolDec"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_vol_down" />-->
-
-<!--            </LinearLayout>-->
-
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <Button-->
-<!--                android:id="@+id/record"-->
-<!--                style="@style/full_button_style"-->
-<!--                android:textSize="15sp"-->
-<!--                android:text="@string/record" />-->
-
-<!--&lt;!&ndash;            <Button&ndash;&gt;-->
-<!--&lt;!&ndash;                android:id="@+id/btn2"&ndash;&gt;-->
-<!--&lt;!&ndash;                style="@style/full_button_style"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:text="@string/btn_2" />&ndash;&gt;-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/info"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/btn_info"/>-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnMagenta"-->
-<!--                    android:textSize="15sp"-->
-<!--                    android:visibility="invisible"-->
-<!--                    android:maxLines="1"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:text="@string/magenta" />-->
-
-<!--            </LinearLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnChannelUp"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="@string/ch_up"/>-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/btnChannelDown"-->
-<!--                    style="@style/half_button_style"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="@string/ch_down" />-->
-
-<!--            </LinearLayout>-->
-
-<!--        </TableRow>-->
-
-
-
-<!--        <TableRow>-->
-
-<!--            <EditText-->
-<!--                android:id="@+id/txtInput"-->
-<!--                android:layout_span="2"-->
-<!--                android:layout_weight="1"-->
-<!--                android:hint="Type text here to send."-->
-<!--                android:inputType="text" />-->
-
-<!--        </TableRow>-->
-
-<!--        <TableRow>-->
-
-<!--            <TextView-->
-<!--                android:id="@+id/txtOut"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_margin="2dp"-->
-<!--                android:layout_span="4"-->
-<!--                android:layout_weight="1" />-->
-<!--        </TableRow>-->
-
-
-<!--        <Button android:id="@+id/btn_cancel_controller"-->
-<!--            style="@style/half_button_style"-->
-<!--            android:text="Cancel"-->
-<!--            />-->
-
-<!--    </TableLayout>-->
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -542,24 +400,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_margin="@dimen/text_margin"
+        android:visibility="gone"
+        android:textColor="@color/white"
         android:text="@string/empty_list_message"
         android:textAlignment="center" />
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:elevation="0dp">
-
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:id="@+id/toolbar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:background="?attr/colorPrimary"-->
-<!--            app:popupTheme="@style/AppTheme.PopupOverlay" />-->
-
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -582,70 +426,5 @@
         tools:context="co.aurasphere.bluetooth.DeviceFragment"
         tools:listitem="@layout/list_device_item" />
 
-
-<!--    <RelativeLayout-->
-<!--        android:id="@+id/layout_connected"-->
-<!--        android:visibility="gone"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        tools:visibility="visible"-->
-<!--        android:background="@color/white"-->
-<!--        android:layout_gravity="center">-->
-
-<!--        <EditText-->
-<!--            android:id="@+id/et_send"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignStart="@id/btn_send"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginBottom="20dp"-->
-<!--            android:minWidth="30dp"-->
-<!--            android:textColor="@color/colorPrimary"-->
-<!--            tools:text="Anirudh" />-->
-
-<!--         <Button-->
-<!--        android:id="@+id/btn_send"-->
-<!--        android:text="@string/send"-->
-<!--        android:layout_below="@id/et_send"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_marginLeft="30dp"-->
-<!--        android:layout_height="wrap_content"/>-->
-
-
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_receive"-->
-<!--            android:text="@string/receive"-->
-<!--            android:layout_marginRight="30dp"-->
-<!--            android:layout_below="@id/et_receive"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_alignBaseline="@id/btn_send"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/et_receive"-->
-<!--            android:layout_alignBaseline="@id/et_send"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:minWidth="30dp"-->
-<!--            android:textSize="20sp"-->
-<!--            tools:text="Anirudh"-->
-<!--            android:textColor="@color/colorPrimary"-->
-<!--            android:layout_alignStart="@id/btn_receive"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:maxLines="2"-->
-<!--            />-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_cancel"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            android:text="Cancel Connection"-->
-<!--            android:layout_below="@id/btn_send"-->
-<!--            android:layout_marginTop="100dp"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_marginBottom="50dp"-->
-<!--            android:layout_height="wrap_content"/>-->
-
-<!--    </RelativeLayout>-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

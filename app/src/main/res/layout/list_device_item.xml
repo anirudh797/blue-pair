@@ -29,7 +29,23 @@ SOFTWARE.
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation ="vertical"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/white"
+            android:alpha="0.1" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/device_icon"
@@ -48,16 +64,24 @@ SOFTWARE.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/text_margin"
+                android:textColor="@color/white_60_opaque"
+                android:textAlignment="viewStart"
+                android:textSize="18sp"
+                android:background="@android:color/transparent"
                 android:layout_marginTop="@dimen/text_margin"
                 android:textAppearance="?attr/textAppearanceListItem" />
 
             <TextView
                 android:id="@+id/device_address"
                 android:layout_width="wrap_content"
+                android:textColor="@color/white_60_opaque"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/text_margin_nested"
+                android:layout_marginBottom="16dp"
                 android:alpha="0.3"
                 android:textSize="12sp" />
+
+        </LinearLayout>
 
         </LinearLayout>
 

@@ -87,9 +87,9 @@ class DeviceRecyclerViewAdapter(listener: ListInteractionListener<BluetoothDevic
      */
     private fun getDeviceIcon(device: BluetoothDevice?): Int {
         return if (bluetooth!!.isAlreadyPaired(device)) {
-            R.drawable.ic_bluetooth_connected_black_24dp
+            R.drawable.ic_bluetooth_connected
         } else {
-            R.drawable.ic_bluetooth_black_24dp
+            R.drawable.ic_bluetooth_static
         }
     }
 

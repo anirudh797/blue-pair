@@ -187,11 +187,12 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             mHandler
         )
 
-//        findViewById<View>(R.id.btn_cancel).setOnClickListener {
-//            bluetoothService?.mmSocket?.close()
-//            controllerLayout?.visibility = View.GONE
-//            recyclerView?.visibility = View.VISIBLE
-//        }
+        findViewById<View>(R.id.cancel).setOnClickListener {
+            bluetoothService?.mmSocket?.close()
+            controllerLayout?.visibility = View.GONE
+            recyclerView?.visibility = View.VISIBLE
+            fab?.visibility= View.VISIBLE
+        }
 
 
 //        findViewById<Button>(R.id.btn_listen).setOnClickListener {
@@ -492,7 +493,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        val btnPlayPause: Button = findViewById(R.id.btnPlayPause)
 //        val btnRewind: Button = findViewById(R.id.btnRewind)
 //        val btnForward: Button = findViewById(R.id.btnForward)
-//        val cancelController: Button = findViewById(R.id.btn_cancel_controller)
+        val cancelController: View = findViewById(R.id.cancel)
         val btnChUp: View = findViewById(R.id.ch_up)
         val btnChDown: View = findViewById(R.id.ch_down)
 //        val btnRecord: Button = findViewById(R.id.record)
@@ -511,6 +512,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 //        buttons.add(btnLeft)
 //        buttons.add(btnRight)
 //        buttons.add(btnUp)
+        buttons.add(cancelController)
         buttons.add(circularDpadUp)
 //        buttons.add(btnDown)
         buttons.add(btnHome)
@@ -538,6 +540,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         buttons.forEach {
 
         }
+//        addRemoteKeyListeners()
         addRemoteKeyListeners(btnPower, RemoteControlHelper.Key.POWER)
         addRemoteKeyListeners(epg, RemoteControlHelper.Key.EPG)
 //        addRemoteKeyListeners(btnMenu, RemoteControlHelper.Key.MENU)

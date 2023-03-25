@@ -610,6 +610,8 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                 DPadView.Direction.DOWN -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_DOWN)
                 DPadView.Direction.LEFT -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_LEFT)
                 DPadView.Direction.RIGHT -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_RIGHT)
+                DPadView.Direction.CENTER -> addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
+
 
             }
             val text = StringBuilder()
@@ -628,7 +630,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
                 }
                 text.append(actionText)
             }
-            findViewById<TextView>(R.id.tv_sample).text = text;
+//            findViewById<TextView>(R.id.tv_sample).text = text;
 
             dpad.onDirectionClickListener = {
                 it?.let {
@@ -638,18 +640,20 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
                     }
                 }
-//                dpad.reInit()
+
+                dpad.setOnClickListener {
+                    Log.i("Click", "Done")
+//                    addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
+                }
+
+                dpad.onCenterLongClick = {
+                    addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
+                }
             }
 
-            dpad.setOnClickListener {
-                Log.i("Click", "Done")
-                addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
-            }
 
-            dpad.onCenterLongClick = {
-                addRemoteKeyListenersForDpad(action,RemoteControlHelper.Key.MENU_PICK)
-            }
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

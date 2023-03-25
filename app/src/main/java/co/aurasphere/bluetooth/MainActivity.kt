@@ -802,13 +802,13 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         Log.d(TAG, "Item clicked : " + device?.let { deviceToString(it) })
         if (bluetoothService!!.isAlreadyPaired(device)) {
             if (device != null) {
-//                bluetoothService!!.connectToDevice(device)
+                bluetoothService!!.connectToDevice(device)
 //                bluetoothService.sendMessage()
-                if (checkForBluetoothAndLocationPermission()) {
-                    connectToDevice(device)
-                } else {
-                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
-                }
+//                if (checkForBluetoothAndLocationPermission()) {
+//                    connectToDevice(device)
+//                } else {
+//                    Toast.makeText(this, "Permissions not granted", Toast.LENGTH_SHORT).show()
+//                }
             }
             for (uuid in device?.uuids!!) {
                 Log.d(TAG, "$uuid")

@@ -534,9 +534,10 @@ class BluetoothController(
             }
         }
 
+         @RequiresApi(Build.VERSION_CODES.P)
          fun manageMyConnectedSocket(mmSocket: BluetoothSocket?) {
             Log.e(TAG, "Connection attempt successfull")
-             isHidDeviceConnected = true
+//             isHidDeviceConnected = true
              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Log.e(TAG, "Connection Type " + mmSocket!!.connectionType)
                 Log.e(TAG, mmSocket.remoteDevice.name)
@@ -569,6 +570,7 @@ class BluetoothController(
     }
 
     val listener  = object  : BluetoothProfile.ServiceListener{
+        @SuppressLint("MissingPermission")
         @RequiresApi(Build.VERSION_CODES.P)
         override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
             if (profile == BluetoothProfile.HID_DEVICE) {

@@ -23,8 +23,10 @@
  */
 package co.aurasphere.bluetooth.view
 
+import android.Manifest
 import co.aurasphere.bluetooth.bluetooth.BluetoothController.Companion.deviceToString
 import android.bluetooth.BluetoothDevice
+import android.content.pm.PackageManager
 import co.aurasphere.bluetooth.bluetooth.BluetoothDiscoveryDeviceListener
 import co.aurasphere.bluetooth.bluetooth.BluetoothController
 import android.view.ViewGroup
@@ -33,6 +35,7 @@ import android.view.View
 import android.widget.ImageView
 import co.aurasphere.bluetooth.R
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.ArrayList
 
@@ -105,8 +108,10 @@ class DeviceRecyclerViewAdapter(listener: ListInteractionListener<BluetoothDevic
      */
     override fun onDeviceDiscovered(device: BluetoothDevice?) {
         listener!!.endLoading(true)
-        devices.add(device)
-        notifyDataSetChanged()
+        if(device?.name?.isNotEmpty()?:false) {
+            devices.add(device)
+            notifyDataSetChanged()
+        }
     }
 
     /**

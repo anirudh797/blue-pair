@@ -47,6 +47,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.RemoteInput
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat.getFloat
 import androidx.recyclerview.widget.LinearLayoutManager
 import co.aurasphere.bluetooth.bluetooth.*
@@ -132,8 +133,11 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
 
         // Changes the theme back from the splashscreen. It's very important that this is called
         // BEFORE onCreate.
+        var window = this@MainActivity.window
+        window.statusBarColor = ContextCompat.getColor(this@MainActivity,R.color.magenta);
+
         SystemClock.sleep(resources.getInteger(R.integer.splashscreen_duration).toLong())
-        setTheme(R.style.AppTheme_NoActionBar)
+//        setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         vibrator = getSystemService(Vibrator::class.java)
@@ -896,6 +900,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         super.onRestart()
         // Stops the discovery.
         if (bluetoothService != null) {
+            bluetoothService?.mmSocket?.close()
             bluetoothService!!.cancelDiscovery()
         }
         // Cleans the view.
@@ -914,6 +919,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         // Stoops the discovery.
         if (bluetoothService != null) {
             bluetoothService!!.cancelDiscovery()
+            bluetoothService!!.mmSocket?.close()
         }
     }
 
@@ -968,10 +974,10 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
         }
     }
 
-    fun connectToDevice(device: BluetoothDevice) {
-        mGatt = device.connectGatt(this, false, gattCallback)
-
-    }
+//    fun connectToDevice(device: BluetoothDevice) {
+//        mGatt = device.connectGatt(this, false, gattCallback)
+//
+//    }
 
     private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -1006,7 +1012,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateView() {
 
-        if (bluetoothService?.mmSocket?.isConnected == true
+        if (bluetoothService?.mmSocket?.isConnected == true && bluetoothService?.isHidDeviceConnected == true
         ) {
             recyclerView?.visibility = View.GONE
             controllerLayout?.visibility = View.VISIBLE
@@ -1017,7 +1023,7 @@ class MainActivity : ComponentActivity(), ListInteractionListener<BluetoothDevic
             recyclerView?.visibility = View.VISIBLE
             fab?.visibility = View.VISIBLE
             controllerLayout?.visibility = View.GONE
-            Toast.makeText(this, "Unable to connect to server", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Trying to connect to server", Toast.LENGTH_SHORT).show()
         }
 
     }

@@ -3,7 +3,9 @@ package co.aurasphere.bluetooth.bluetooth
 import android.bluetooth.BluetoothHidDevice
 import android.bluetooth.BluetoothHidDeviceAppQosSettings
 import android.bluetooth.BluetoothHidDeviceAppSdpSettings
+import android.os.Build
 import android.os.ParcelUuid
+import androidx.annotation.RequiresApi
 
 object MessageConstants {
     const val CONNECTION_SUCCESSFULL = 3
@@ -101,6 +103,7 @@ object Constants {
     private const val QOS_TOKEN_BUCKET_SIZE = 9
     private const val QOS_PEAK_BANDWIDTH = 0
     private const val QOS_LATENCY = 11250
+    @RequiresApi(Build.VERSION_CODES.P)
     val SDP_RECORD = BluetoothHidDeviceAppSdpSettings(
         SDP_NAME,
         SDP_DESCRIPTION,
@@ -113,6 +116,7 @@ object Constants {
     )
 
     //                    Constants.HID_REPORT_DESC_TEST);
+    @RequiresApi(Build.VERSION_CODES.P)
     val QOS_OUT = BluetoothHidDeviceAppQosSettings(
         BluetoothHidDeviceAppQosSettings.SERVICE_BEST_EFFORT,
         QOS_TOKEN_RATE,
